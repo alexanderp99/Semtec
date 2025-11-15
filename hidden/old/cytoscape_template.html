@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://unpkg.com/cytoscape@3.27.0/dist/cytoscape.min.js"></script>
+    <script src="https://unpkg.com/webcola/WebCola/cola.min.js"></script>
+    <script src="https://unpkg.com/cytoscape-cola/cytoscape-cola.js"></script>
+    <style>
+        #cy {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ccc;
+        }
+
+        /* Overlay styles */
+        #person-overlay {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            min-width: 300px;
+            max-width: 500px;
+        }
+
+        #overlay-content {
+            margin-bottom: 15px;
+        }
+
+        #close-overlay {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+        }
+
+        #close-overlay:hover {
+            background-color: #45a049;
+        }
+
+        .overlay-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div id="cy"></div>
+    <div class="overlay-backdrop" id="overlay-backdrop"></div>
+    <div id="person-overlay">
+        <div id="overlay-content"></div>
+        <button id="close-overlay">Close</button>
+    </div>
+    <script>
+        function initializeCytoscape(graphData) {
+            // Store people data for easy access
+            const peopleData = graphData.people || [];
+
+            // Create people nodes and position them along their edges
+            let peopleNodes = [];
+            let peopleEdges = [];
+
+            peopleData.forEach((person, index) => {
+                const personId = `person_${index}`;
+                const edgeId = person.target;
+                const edge = graphData.edges.find(e => e.data.id === edgeId);
+
+                if (edge) {
+                    // Create person node
+                    peopleNodes.push({
+                        data: {
+                            id: personId,
+                            label: person.name,
+                            type: 'person',
+                            hasEmergency: person.hasEmergency,
+                            parentEdge: edgeId,
+                            personIndex: index  // Store index to link back to original data
+                        }
+                    });
+
+                    // Create invisible edges to position the person along the edge
+                    peopleEdges.push({
+                        data: {
+                            id: `${personId}_edge1`,
+                            source: edge.data.source,
+                            target: personId,
+                            invisible: true
+                        }
+                    });
+                    peopleEdges.push({
+                        data: {
+                            id: `${personId}_edge2`,
+                            source: personId,
+                            target: edge.data.target,
+                            invisible: true
+                        }
+                    });
+                }
+            });
+
+            // Combine all elements
+            let allElements = [
+                ...graphData.nodes,
+                ...graphData.edges,
+                ...peopleNodes,
+                ...peopleEdges
+            ];
+
+            let cy = cytoscape({
+                container: document.getElementById('cy'),
+                elements: allElements,
+                style: [
+                    {
+                        selector: 'node',
+                        style: {
+                            'label': 'data(label)',
+                            'background-color': '#61bffc',
+                            'text-valign': 'center'
+                        }
+                    },
+                    {
+                        selector: 'node[type = "person"]',
+                        style: {
+                            'background-color': '#4CAF50',
+                            'width': 30,
+                            'height': 30,
+                            'shape': 'ellipse',
+                            'cursor': 'pointer'
+                        }
+                    },
+                    {
+                        selector: 'node[hasEmergency = "true"]',
+                        style: {
+                            'background-color': '#FF5252'
+                        }
+                    },
+                    {
+                        selector: 'edge',
+                        style: {
+                            'label': 'data(distance)',
+                            'width': 2,
+                            'line-color': '#ccc',
+                            'target-arrow-color': '#ccc',
+                            'target-arrow-shape': 'triangle'
+                        }
+                    },
+                    {
+                        selector: 'edge[invisible = "true"]',
+                        style: {
+                            'width': 0,
+                            'line-color': 'transparent',
+                            'target-arrow-color': 'transparent'
+                        }
+                    }
+                ],
+                layout: {
+                    name: 'cola',
+                    edgeLength: function(edge) {
+                        return edge.data('distance') || 100;
+                    }
+                }
+            });
+
+            // Add click event listener for person nodes
+            cy.on('tap', 'node[type = "person"]', function(evt) {
+                const node = evt.target;
+                const personIndex = node.data('personIndex');
+
+                if (personIndex !== undefined && peopleData[personIndex]) {
+                    showPersonOverlay(peopleData[personIndex]);
+                }
+            });
+
+            // Function to display person information in overlay
+            function showPersonOverlay(person) {
+                const overlay = document.getElementById('person-overlay');
+                const content = document.getElementById('overlay-content');
+                const backdrop = document.getElementById('overlay-backdrop');
+
+                // Format the person information
+                let html = `<h3>${person.name}</h3>`;
+                html += `<p><strong>Type:</strong> ${person.type}</p>`;
+                html += `<p><strong>Has Emergency:</strong> ${person.hasEmergency ? 'Yes' : 'No'}</p>`;
+
+                if (person.detectsEmergency) {
+                    html += `<p><strong>Detects Emergency:</strong> ${person.detectsEmergency}</p>`;
+                }
+
+                if (person.certifications && person.certifications.length > 0) {
+                    html += `<p><strong>Certifications:</strong> ${person.certifications.join(', ')}</p>`;
+                }
+
+                if (person.medicalHistory && person.medicalHistory.length > 0) {
+                    html += `<p><strong>Medical History:</strong></p><ul>`;
+                    person.medicalHistory.forEach(history => {
+                        html += `<li>${history.note} (${history.emergencyType})</li>`;
+                    });
+                    html += `</ul>`;
+                }
+
+                content.innerHTML = html;
+                overlay.style.display = 'block';
+                backdrop.style.display = 'block';
+            }
+
+            // Close overlay functionality
+            document.getElementById('close-overlay').addEventListener('click', function() {
+                document.getElementById('person-overlay').style.display = 'none';
+                document.getElementById('overlay-backdrop').style.display = 'none';
+            });
+
+            // Close overlay when clicking on backdrop
+            document.getElementById('overlay-backdrop').addEventListener('click', function() {
+                document.getElementById('person-overlay').style.display = 'none';
+                this.style.display = 'none';
+            });
+        }
+
+        // Initialize with data passed from Dash
+        initializeCytoscape({{graph_data}});
+    </script>
+</body>
+</html>

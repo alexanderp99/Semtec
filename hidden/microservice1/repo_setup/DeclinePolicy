@@ -1,0 +1,28 @@
+##FirstResponderPolicies
+    csa:DenialPolicy a owl:Class .
+    csa:Condition a owl:Class .
+    csa:FirstResponderPolicy a owl:Class .
+    csa:EmergencyType a owl:Class .
+
+    # Object Properties
+    csa:denialCondition a owl:ObjectProperty ;
+        rdfs:domain csa:FirstResponderPolicy ;
+        rdfs:range csa:Condition .
+
+    #Data types
+     csa:maxDenialsPerDay a owl:DatatypeProperty ;
+        rdfs:domain csa:DenialPolicy ;
+        rdfs:range xsd:integer .
+
+    csa:onlyAllowDenialIfSeverityBelow a owl:DatatypeProperty ;
+        rdfs:domain csa:Condition ;
+        rdfs:range xsd:integer .
+
+    ##PolicyInstance
+
+    csa:FirstResponderPolicyInstance a csa:FirstResponderPolicy ;
+    csa:maxDenialsPerDay 3 ;
+    csa:denialCondition [
+        a csa:Condition ;
+        csa:onlyAllowDenialIfSeverityBelow "4"^^xsd:integer ;
+    ] .

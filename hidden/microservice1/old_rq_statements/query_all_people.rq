@@ -1,0 +1,14 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?person ?personName ?subclass
+WHERE {
+ ?person a csa:Person ;
+ csa:hasName ?personName .
+
+    ?person a ?subclass .
+    ?subclass rdfs:subClassOf csa:Person .
+
+    FILTER(?subclass != csa:Person)
+}

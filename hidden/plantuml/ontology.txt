@@ -1,0 +1,181 @@
+@startuml
+skinparam ranksep 25
+skinparam nodesep 15
+skinparam classFontSize 10
+left to right direction
+
+title "City Swift Aid - Complete Ontology Hierarchy"
+
+' Person Hierarchy
+together {
+  abstract class Person
+  class FirstResponder
+  class Patient
+  Person <|-- FirstResponder
+  Person <|-- Patient
+}
+
+' Certification Main Hierarchy
+together {
+  abstract class Certification
+  class BasicCertification
+  class IntermediateCertification
+  class AdvancedCertification
+  Certification <|-- BasicCertification
+  Certification <|-- IntermediateCertification
+  Certification <|-- AdvancedCertification
+}
+
+' Specific Cardiac Certifications
+together {
+  class BasicCardiacCertification
+  class IntermediateCardiacCertification
+  class AdvancedCardiacCertification
+  BasicCertification <|-- BasicCardiacCertification
+  IntermediateCertification <|-- IntermediateCardiacCertification
+  AdvancedCertification <|-- AdvancedCardiacCertification
+}
+
+' Specific Trauma Certifications
+together {
+  class BasicTraumaCertification
+  class IntermediateTraumaCertification
+  class AdvancedTraumaCertification
+  BasicCertification <|-- BasicTraumaCertification
+  IntermediateCertification <|-- IntermediateTraumaCertification
+  AdvancedCertification <|-- AdvancedTraumaCertification
+}
+
+' Specific Neurological Certifications
+together {
+  class BasicNeurologicalCertification
+  class IntermediateNeurologicalCertification
+  class AdvancedNeurologicalCertification
+  BasicCertification <|-- BasicNeurologicalCertification
+  IntermediateCertification <|-- IntermediateNeurologicalCertification
+  AdvancedCertification <|-- AdvancedNeurologicalCertification
+}
+
+' Specific Respiratory Certifications
+together {
+  class BasicRespiratoryCertification
+  class IntermediateRespiratoryCertification
+  class AdvancedRespiratoryCertification
+  BasicCertification <|-- BasicRespiratoryCertification
+  IntermediateCertification <|-- IntermediateRespiratoryCertification
+  AdvancedCertification <|-- AdvancedRespiratoryCertification
+}
+
+' Symptom Hierarchy
+together {
+  abstract class Symptom
+  class SymptomLevel
+  Symptom --> "hasSymptomLevel 1..*" SymptomLevel
+}
+
+' Cardiac Symptoms
+together {
+  class HeartAttackSymptoms
+  class CardiacArrestSymptoms
+  class AnginaSymptoms
+  Symptom <|-- HeartAttackSymptoms
+  Symptom <|-- CardiacArrestSymptoms
+  Symptom <|-- AnginaSymptoms
+}
+
+' Trauma Symptoms
+together {
+  class SimpleFractureSymptoms
+  class CompoundFractureSymptoms
+  class HeadInjurySymptoms
+  Symptom <|-- SimpleFractureSymptoms
+  Symptom <|-- CompoundFractureSymptoms
+  Symptom <|-- HeadInjurySymptoms
+}
+
+' Neurological Symptoms
+together {
+  class StrokeSymptoms
+  class SeizureSymptoms
+  Symptom <|-- StrokeSymptoms
+  Symptom <|-- SeizureSymptoms
+}
+
+' Respiratory Symptoms
+together {
+  class ChokingSymptoms
+  class AsthmaAttackSymptoms
+  class HyperventilationSymptoms
+  Symptom <|-- ChokingSymptoms
+  Symptom <|-- AsthmaAttackSymptoms
+  Symptom <|-- HyperventilationSymptoms
+}
+
+' Category Hierarchy
+together {
+  abstract class Category
+  class HeartRateCategory
+  class InflammatoryCategory
+  class EKGReadingCategory
+  class MuscleTensionCategory
+  class ChokingCategory
+  class AsthmaAttackCategory
+  class HyperventilationCategory
+  Category <|-- HeartRateCategory
+  Category <|-- InflammatoryCategory
+  Category <|-- EKGReadingCategory
+  Category <|-- MuscleTensionCategory
+  Category <|-- ChokingCategory
+  Category <|-- AsthmaAttackCategory
+  Category <|-- HyperventilationCategory
+
+  HyperventilationCategory <|-- VeryLowHyperventilation
+  HyperventilationCategory <|-- LowHyperventilation
+  HyperventilationCategory <|-- MediumHyperventilation
+  HyperventilationCategory <|-- HighHyperventilation
+  HyperventilationCategory <|-- VeryHighHyperventilation
+
+}
+
+
+' Emergency Type Hierarchy
+together {
+  abstract class EmergencyType
+  class CardiacEmergency
+  class TraumaEmergency
+  class NeurologicalEmergency
+  class RespiratoryEmergency
+  EmergencyType <|-- CardiacEmergency
+  EmergencyType <|-- TraumaEmergency
+  EmergencyType <|-- NeurologicalEmergency
+  EmergencyType <|-- RespiratoryEmergency
+}
+
+' Medical Sensor
+class MedicalSensor
+
+' Key Relationships
+FirstResponder --> "holdsCertification 1..*" Certification
+SymptomLevel --> "requiresCertification 1" Certification
+SymptomLevel --> "hasSymptom 1" Category
+EmergencyType --> "triggeredBy 1" Symptom
+MedicalSensor --> "hasCategory 1..n" Category
+Patient --> "hasSensor 1" MedicalSensor
+
+note right of FirstResponder
+  Properties:
+  - hasName
+  - locatedAt
+  - hasSSN
+  - denialsToday
+  - canDenyRequest
+end note
+
+note right of SymptomLevel
+  Connects symptoms to
+  required certifications
+  and medical categories
+end note
+
+
+@enduml

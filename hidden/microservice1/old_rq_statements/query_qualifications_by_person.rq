@@ -1,0 +1,20 @@
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?responderName ?emergency ?emergencyType ?severity ?certification
+WHERE {
+    {person} a csa:Person ;
+               csa:hasName ?responderName ;
+               csa:holdsCertification ?certification .
+
+    ?certification csa:certificationForEmergencyType ?emergencyType .
+
+    ?emergency a ?emergencyType ;
+               csa:hasSeverity ?severity .
+
+    FILTER NOT EXISTS { ?emergency csa:respondedBy ?otherResponder }
+}
+ORDER BY ?responderName ?emergency

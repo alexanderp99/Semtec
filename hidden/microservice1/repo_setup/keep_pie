@@ -1,0 +1,8 @@
+Id: emergency_creation
+  person <csa:hasDetectedMedicalIssue> medicalIssue
+  medicalIssue <csa:medicalIssueSpecialty> requiredSpecialty
+  -------------------------------
+  emergency <rdf:type> csa:Emergency
+  emergency <csa:happensOn> person
+  emergency <csa:hasEmergencyType> medicalIssue
+  emergency <csa:hasSpeciality> requiredSpecialty

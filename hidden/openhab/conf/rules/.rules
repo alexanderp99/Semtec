@@ -1,0 +1,236 @@
+import org.openhab.core.model.script.actions.HTTP
+import org.openhab.core.model.script.actions.Log
+
+rule "Send Alex HeartRate Update"
+when
+    Item Alex_HeartRate received update
+then
+    val ssn = 0
+    val heart_rate = Alex_HeartRate.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "heartRate": ' + heart_rate + '}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Alex", "HeartRate: " + json + " | " + res)
+end
+
+rule "Send Alex Hardness Update"
+when
+    Item Alex_HitGroundWithHardness received update
+then
+    val ssn = 0
+    val hardness = Alex_HitGroundWithHardness.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "hardness": ' + hardness + '}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Alex", "Hardness: " + json + " | " + res)
+end
+
+rule "Send Alex Location Update"
+when
+    Item Alex_Street_Location_Name received update
+then
+    val ssn = 0
+    val location = Alex_Street_Location_Name.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "location": "' + location + '"}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Alex", "Location: " + json + " | " + res)
+end
+
+rule "Send Alexander HeartRate Update"
+when
+    Item Alexander_HeartRate received update
+then
+    val ssn = 9
+    val heart_rate = Alexander_HeartRate.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "heartRate": ' + heart_rate + '}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Alexander", "HeartRate: " + json + " | " + res)
+end
+
+rule "Send Alexander Hardness Update"
+when
+    Item Alexander_HitGroundWithHardness received update
+then
+    val ssn = 9
+    val hardness = Alexander_HitGroundWithHardness.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "hardness": ' + hardness + '}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Alexander", "Hardness: " + json + " | " + res)
+end
+
+rule "Send Alexander Location Update"
+when
+    Item Alexander_Street_Location_Name received update
+then
+    val ssn = 9
+    val location = Alexander_Street_Location_Name.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "location": "' + location + '"}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Alexander", "Location: " + json + " | " + res)
+end
+
+rule "Send Tim HeartRate Update"
+when
+    Item Tim_HeartRate received update
+then
+    val ssn = 1
+    val heart_rate = Tim_HeartRate.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "heartRate": ' + heart_rate + '}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Tim", "HeartRate: " + json + " | " + res)
+end
+
+rule "Send Tim Hardness Update"
+when
+    Item Tim_HitGroundWithHardness received update
+then
+    val ssn = 1
+    val hardness = Tim_HitGroundWithHardness.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "hardness": ' + hardness + '}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Tim", "Hardness: " + json + " | " + res)
+end
+
+rule "Send Tim Location Update"
+when
+    Item Tim_Street_Location_Name received update
+then
+    val ssn = 1
+    val location = Tim_Street_Location_Name.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "location": "' + location + '"}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Tim", "Location: " + json + " | " + res)
+end
+
+rule "Send Tom HeartRate Update"
+when
+    Item Tom_HeartRate received update
+then
+    val ssn = 2
+    val heart_rate = Tom_HeartRate.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "heartRate": ' + heart_rate + '}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Tom", "HeartRate: " + json + " | " + res)
+end
+
+rule "Send Tom Hardness Update"
+when
+    Item Tom_HitGroundWithHardness received update
+then
+    val ssn = 2
+    val hardness = Tom_HitGroundWithHardness.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "hardness": ' + hardness + '}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Tom", "Hardness: " + json + " | " + res)
+end
+
+rule "Send Tom Location Update"
+when
+    Item Tom_Street_Location_Name received update
+then
+    val ssn = 2
+    val location = Tom_Street_Location_Name.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "location": "' + location + '"}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Tom", "Location: " + json + " | " + res)
+end
+
+rule "Send Sarah HeartRate Update"
+when
+    Item Sarah_HeartRate received update
+then
+    val ssn = 3
+    val heart_rate = Sarah_HeartRate.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "heartRate": ' + heart_rate + '}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Sarah", "HeartRate: " + json + " | " + res)
+end
+
+rule "Send Sarah Hardness Update"
+when
+    Item Sarah_HitGroundWithHardness received update
+then
+    val ssn = 3
+    val hardness = Sarah_HitGroundWithHardness.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "hardness": ' + hardness + '}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Sarah", "Hardness: " + json + " | " + res)
+end
+
+rule "Send Sarah Location Update"
+when
+    Item Sarah_Street_Location_Name received update
+then
+    val ssn = 3
+    val location = Sarah_Street_Location_Name.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "location": "' + location + '"}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Sarah", "Location: " + json + " | " + res)
+end
+
+rule "Send Danial HeartRate Update"
+when
+    Item Danial_HeartRate received update
+then
+    val ssn = 4
+    val heart_rate = Danial_HeartRate.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "heartRate": ' + heart_rate + '}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Danial", "HeartRate: " + json + " | " + res)
+end
+
+rule "Send Danial Hardness Update"
+when
+    Item Danial_HitGroundWithHardness received update
+then
+    val ssn = 4
+    val hardness = Danial_HitGroundWithHardness.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "hardness": ' + hardness + '}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Danial", "Hardness: " + json + " | " + res)
+end
+
+rule "Send Danial Location Update"
+when
+    Item Danial_Street_Location_Name received update
+then
+    val ssn = 4
+    val location = Danial_Street_Location_Name.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "location": "' + location + '"}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Danial", "Location: " + json + " | " + res)
+end

@@ -1,0 +1,9 @@
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+INSERT DATA {
+  csa:{edge_id} a csa:StreetSegment ;
+      csa:hasStreetName "{street_name}" ;
+      csa:hasLengthMeters {length} ;
+      csa:connectedTo csa:{connected_to} .
+}
