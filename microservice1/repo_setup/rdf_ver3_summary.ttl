@@ -556,6 +556,11 @@ csa:8a9b3c2d-1e4f-6g7h-9i0a a csa:FirstResponder ;
         csa:hasMeasurement csa:GroundHardnessMeasurement ;
         csa:hasValue csa:Low
     ] ;
+    csa:hasHealthMeasurement [
+        a csa:MeasurementValuePair ;
+        csa:hasMeasurement csa:EKGReadingMeasurement ;
+        csa:hasValue csa:Low
+    ] ;
     csa:hasSSN "1" .
 
 

@@ -613,4 +613,10 @@ csa:8a9b3c2d-1e4f-6g7h-a a csa:FirstResponder ;
         csa:hasCertificationLevel csa:BasicLevel ;
         csa:certificationSpecialty csa:TraumaSpeciality
     ] ;
+
+###
+
+csa:declinedEmergency a owl:ObjectProperty ;
+    rdfs:domain csa:Person ;
+    rdfs:range csa:Emergency .
     .
