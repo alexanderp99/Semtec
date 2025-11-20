@@ -1,5 +1,0 @@
-PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
-
-select * where {
-    ?s csa:canRespondTo ?o .
-}
