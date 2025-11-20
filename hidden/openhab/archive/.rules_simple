@@ -1,0 +1,41 @@
+import org.openhab.core.model.script.actions.HTTP
+import org.openhab.core.model.script.actions.Log
+
+rule "Send Alex HeartRate Update"
+when
+    Item Alex_HeartRate received update
+then
+    val ssn = 0
+    val heart_rate = Alex_HeartRate.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "heartRate": ' + heart_rate + '}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Alex", "HeartRate: " + json + " | " + res)
+end
+
+rule "Send Alex Hardness Update"
+when
+    Item Alex_HitGroundWithHardness received update
+then
+    val ssn = 0
+    val hardness = Alex_HitGroundWithHardness.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "hardness": ' + hardness + '}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Alex", "Hardness: " + json + " | " + res)
+end
+
+rule "Send Alex Location Update"
+when
+    Item Alex_Street_Location_Name received update
+then
+    val ssn = 0
+    val location = Alex_Street_Location_Name.state.toString
+
+    val json = '{"SSN": "' + ssn + '", "location": "' + location + '"}'
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Alex", "Location: " + json + " | " + res)
+end

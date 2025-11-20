@@ -1,0 +1,23 @@
+Number Alex_HeartRate "Alex Heart Rate"
+Number Alex_HitGroundWithHardness "Alex HitGroundWithHardness"
+String Alex_Street_Location_Name "Alex Street Name"
+
+Number Alexander_HeartRate "Alexander Heart Rate"
+Number Alexander_HitGroundWithHardness "Alexander HitGroundWithHardness"
+String Alexander_Street_Location_Name "Alexander Street Name"
+
+Number Tim_HeartRate "Tim Heart Rate"
+Number Tim_HitGroundWithHardness "Tim HitGroundWithHardness"
+String Tim_Street_Location_Name "Tim Street Name"
+
+Number Tom_HeartRate "Tom Heart Rate"
+Number Tom_HitGroundWithHardness "Tom HitGroundWithHardness"
+String Tom_Street_Location_Name "Tom Street Name"
+
+Number Sarah_HeartRate "Sarah Heart Rate"
+Number Sarah_HitGroundWithHardness "Sarah HitGroundWithHardness"
+String Sarah_Street_Location_Name "Sarah Street Name"
+
+Number Danial_HeartRate "Danial Heart Rate"
+Number Danial_HitGroundWithHardness "Danial HitGroundWithHardness"
+String Danial_Street_Location_Name "Danial Street Name"

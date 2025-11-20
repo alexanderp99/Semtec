@@ -1,0 +1,39 @@
+import org.openhab.core.model.script.actions.HTTP
+import org.openhab.core.model.script.actions.Log
+
+val random = new java.util.Random()
+val gaussian = random.nextGaussian() // mean=0.0, stddev=1.0
+
+
+rule "Send Alex Data"
+when Time cron "0/10 * * * * ?" then
+    val heart_rate_mean = 70
+    val heart_rate_stdDev = 10
+    val gaussian = random.nextGaussian
+    val heart_rate = (heart_rate_mean + gaussian * heart_rate_stdDev).intValue
+
+    val chance = Math::random
+    var ground_hit_strength = null as Integer
+    if (chance < 0.05) {
+        ground_hit_strength = (1 + (Math::random * 6)).intValue
+    }
+
+    val temp = (37.0 + random.nextGaussian * 0.3).floatValue
+
+    Alex_HeartRate.postUpdate(heart_rate)
+    Alex_Temperature.postUpdate(temp)
+    Alex_Street_Location_Name.postUpdate("Elm Street 5")
+
+    val data = new HashMap<String, String>()
+    data.put("SSN", "\"0\"")
+    data.put("heartRate", heart_rate.toString)
+    data.put("temperature", temp.toString)
+    if (ground_hit_strength !== null) {
+        data.put("groundHitStrength", ground_hit_strength.toString)
+    }
+
+    val json = "{" + data.entrySet.map[entry | "\"" + entry.getKey + "\": " + entry.getValue].join(", ") + "}"
+
+    val res = HTTP.sendHttpPostRequest("http://localhost:5000/data", "application/json", json)
+    Log.info("Alex", json + " | " + res)
+end

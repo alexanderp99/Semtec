@@ -1,0 +1,31 @@
+services:
+  s1: #ref https://blog.teclado.com/run-flask-apps-with-docker-compose/
+    build:
+      context: microservice1
+    ports:
+      - 5000:5000
+    depends_on:
+      - graphdb
+  graphdb: # ref: https://blog.martinscloud.com/graphdb-uise-docker-compose-for-graphdb/
+    image: ontotext/graphdb:10.8.3
+    #command: sh -c "/usr/local/bin/fill_db.sh && exec myexecutable"
+    hostname: graphdb
+    ports:
+      - 7200:7200
+  openhab:
+    image: "openhab/openhab:4.3.5"
+    restart: always
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    volumes:
+      - "./openhab/addons:/openhab/addons"
+      - "./openhab/conf:/openhab/conf"
+      - "./openhab/userdata:/openhab/userdata"
+    environment:
+      CRYPTO_POLICY: "unlimited"
+      EXTRA_JAVA_OPTS: "-Duser.timezone=Europe/Berlin"
+      OPENHAB_HTTP_PORT: "8080"
+      OPENHAB_HTTPS_PORT: "8443"
+    depends_on:
+      - s1

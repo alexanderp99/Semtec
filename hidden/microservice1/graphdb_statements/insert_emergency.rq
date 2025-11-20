@@ -1,0 +1,11 @@
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+INSERT DATA {
+  csa:{emergency_id} a csa:Emergency ;
+      csa:happensOn csa:{patient_id} ;
+      csa:hasEmergencyType csa:{emergency_type} ;
+      csa:hasStatus [
+          a csa:ReportedStatus ;
+          csa:statusTimestamp "{current_time}"^^xsd:dateTime
+      ] }

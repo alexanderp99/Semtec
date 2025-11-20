@@ -1,0 +1,622 @@
+@prefix csa: <https://omilab.org/experiments/city-swift-aid#> .
+@prefix support: <https://omilab.org/experiments/city-swift-aid/support-definitions> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema: <https://schema.org/> .
+@prefix ex: <http://example.org/schema#> .
+
+##- People
+csa:Person a rdfs:Class .
+csa:FirstResponder rdfs:subClassOf csa:Person .
+csa:Patient rdfs:subClassOf csa:Person .
+
+csa:locatedAt a owl:ObjectProperty ;
+    rdfs:domain csa:Person ;
+    rdfs:range csa:StreetSegment .
+csa:respondsTo a owl:AsymmetricProperty ;
+    rdfs:domain csa:FirstResponder ;
+    rdfs:range csa:Emergency .
+csa:hasCertification a owl:ObjectProperty ;
+    rdfs:domain csa:Person ;
+    rdfs:range csa:Certification .
+csa:hasDenialPolicy a owl:ObjectProperty ;
+    rdfs:domain csa:Person ;
+    rdfs:range csa:FirstResponderPolicy .
+csa:hasSSN a owl:InverseFunctionalProperty , owl:FunctionalProperty ;
+    rdfs:domain csa:Person;
+    rdfs:range xsd:string .
+csa:hasMedicalHistoryEntry a owl:ObjectProperty ;
+    rdfs:domain csa:Person;
+    rdfs:range csa:MedicalHistoryEntry .
+
+csa:denialsToday a owl:DatatypeProperty ;
+    rdfs:domain csa:FirstResponder ;
+    rdfs:range xsd:integer .
+csa:hasName a owl:DatatypeProperty ;
+    rdfs:domain csa:Person ;
+    rdfs:range xsd:string .
+csa:hasDetectedMedicalIssue a owl:ObjectProperty ;
+    rdfs:domain csa:Person ;
+    rdfs:range csa:MedicalIssue .
+
+
+csa:Person rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty csa:hasSSN ;
+    owl:cardinality 1;
+] .
+csa:Person rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty csa:hasName ;
+    owl:cardinality 1;
+] .
+csa:Person rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty csa:locatedAt ;
+    owl:cardinality 1;
+] .
+##
+
+##- Health
+csa:Measurement a owl:Class .
+csa:hasHealthMeasurement a owl:ObjectProperty ;
+    rdfs:domain csa:Person ;
+    rdfs:range csa:MeasurementValuePair .
+
+
+csa:HeartRateMeasurement a owl:Class ; rdfs:subClassOf csa:Measurement .
+csa:InflammatoryMeasurement a owl:Class ; rdfs:subClassOf csa:Measurement .
+csa:GroundHardnessMeasurement a owl:Class ; rdfs:subClassOf csa:Measurement .
+csa:EKGReadingMeasurement a owl:Class ; rdfs:subClassOf csa:Measurement .
+csa:MuscleTensionMeasurement a owl:Class ; rdfs:subClassOf csa:Measurement .
+csa:AirflowMeasurement a owl:Class ; rdfs:subClassOf csa:Measurement .
+csa:ChokingMeasurement a owl:Class ; rdfs:subClassOf csa:Measurement .
+csa:BreathingRateMeasurement a owl:Class ; rdfs:subClassOf csa:Measurement .
+csa:AsthmaAttackMeasurement a owl:Class ; rdfs:subClassOf csa:Measurement .
+csa:HyperventilationMeasurement a owl:Class ; rdfs:subClassOf csa:Measurement .
+
+
+##- Severities
+csa:SeverityValue a owl:Class .
+
+csa:VeryLow a owl:Class ; rdfs:subClassOf csa:SeverityValue .
+csa:Low a owl:Class ; rdfs:subClassOf csa:SeverityValue .
+csa:Medium a owl:Class ; rdfs:subClassOf csa:SeverityValue .
+csa:High a owl:Class ; rdfs:subClassOf csa:SeverityValue .
+csa:VeryHigh a owl:Class ; rdfs:subClassOf csa:SeverityValue .
+
+##
+
+##- MeasurementPair
+csa:MeasurementValuePair a owl:Class .
+csa:hasMeasurementValuePair a owl:ObjectProperty ;
+    rdfs:domain csa:TreatmentLevel ;
+    rdfs:range csa:MeasurementValuePair .
+csa:hasMeasurement a owl:ObjectProperty ;
+    rdfs:domain csa:MeasurementValuePair ;
+    rdfs:range csa:Measurement .
+csa:hasValue a owl:ObjectProperty ;
+    rdfs:domain csa:MeasurementValuePair ;
+    rdfs:range csa:SeverityValue .
+
+##- Certifications
+csa:Certification a owl:Class .
+
+csa:CertificationLevel a owl:Class .
+csa:BasicLevel a csa:CertificationLevel .
+csa:BasicLevel <rdfs:subClassOf> csa:BasicLevel .
+csa:IntermediateLevel <rdfs:subClassOf> csa:BasicLevel .
+csa:AdvancedLevel <rdfs:subClassOf> csa:IntermediateLevel .
+csa:hasCertificationLevel a owl:ObjectProperty ;
+    rdfs:domain csa:Certification ;
+    rdfs:range csa:CertificationLevel .
+
+csa:holdsCertification a owl:ObjectProperty ;
+    rdfs:domain csa:Person ;
+    rdfs:range csa:Certification .
+##
+
+##- MedicalIssues
+csa:MedicalIssue a owl:Class .
+csa:TreatmentLevel a owl:Class .
+csa:hasTreatmentLevel a owl:ObjectProperty ;
+    rdfs:domain csa:MedicalIssue ;
+    rdfs:range csa:TreatmentLevel .
+csa:requiresCertificationLevel a owl:ObjectProperty ;
+    rdfs:domain csa:TreatmentLevel ;
+    rdfs:range csa:CertificationLevel .
+
+
+# --- Simple Fracture ---
+csa:SimpleFracture a csa:MedicalIssue ;
+    csa:medicalIssueSpecialty csa:TraumaSpeciality ;
+    csa:hasTreatmentLevel csa:SimpleFracture_TL1 , csa:SimpleFracture_TL2 .
+
+csa:SimpleFracture_TL1 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:BasicLevel ;
+    csa:hasMeasurementValuePair csa:SimpleFracture_TL1_MV1 .
+
+csa:SimpleFracture_TL1_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:GroundHardnessMeasurement ;
+    csa:hasValue csa:Low .
+
+csa:SimpleFracture_TL2 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:IntermediateLevel ;
+    csa:hasMeasurementValuePair csa:SimpleFracture_TL2_MV1 , csa:SimpleFracture_TL2_MV2 .
+
+csa:SimpleFracture_TL2_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:InflammatoryMeasurement ;
+    csa:hasValue csa:High .
+
+csa:SimpleFracture_TL2_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:GroundHardnessMeasurement ;
+    csa:hasValue csa:Medium .
+
+
+# --- Compound Fracture ---
+csa:CompoundFracture a csa:MedicalIssue ;
+    csa:medicalIssueSpecialty csa:TraumaSpeciality ;
+    csa:hasTreatmentLevel csa:CompoundFracture_TL1 , csa:CompoundFracture_TL2 .
+
+csa:CompoundFracture_TL1 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:IntermediateLevel ;
+    csa:hasMeasurementValuePair csa:CompoundFracture_TL1_MV1 , csa:CompoundFracture_TL1_MV2 .
+
+csa:CompoundFracture_TL1_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:InflammatoryMeasurement ;
+    csa:hasValue csa:High .
+
+csa:CompoundFracture_TL1_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:GroundHardnessMeasurement ;
+    csa:hasValue csa:High .
+
+csa:CompoundFracture_TL2 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:AdvancedLevel ;
+    csa:hasMeasurementValuePair csa:CompoundFracture_TL2_MV1 , csa:CompoundFracture_TL2_MV2 .
+
+csa:CompoundFracture_TL2_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:InflammatoryMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+csa:CompoundFracture_TL2_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:GroundHardnessMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+
+# --- Cardiac Arrest ---
+csa:CardiacArrest a csa:MedicalIssue ;
+    csa:medicalIssueSpecialty csa:CardiacSpeciality ;
+    csa:hasTreatmentLevel csa:CardiacArrest_TL1 .
+
+csa:CardiacArrest_TL1 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:IntermediateLevel ;
+    csa:hasMeasurementValuePair csa:CardiacArrest_TL1_MV1 , csa:CardiacArrest_TL1_MV2 , csa:CardiacArrest_TL1_MV3 .
+
+csa:CardiacArrest_TL1_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:HeartRateMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+csa:CardiacArrest_TL1_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:EKGReadingMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+csa:CardiacArrest_TL1_MV3 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:BreathingRateMeasurement ;
+    csa:hasValue csa:VeryLow .
+
+
+# --- Angina ---
+csa:Angina a csa:MedicalIssue ;
+    csa:medicalIssueSpecialty csa:CardiacSpeciality ;
+    csa:hasTreatmentLevel csa:Angina_TL1 , csa:Angina_TL2 .
+
+csa:Angina_TL1 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:BasicLevel ;
+    csa:hasMeasurementValuePair csa:Angina_TL1_MV1 , csa:Angina_TL1_MV2 .
+
+csa:Angina_TL1_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:HeartRateMeasurement ;
+    csa:hasValue csa:Medium .
+
+csa:Angina_TL1_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:BreathingRateMeasurement ;
+    csa:hasValue csa:Medium .
+
+csa:Angina_TL2 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:IntermediateLevel ;
+    csa:hasMeasurementValuePair csa:Angina_TL2_MV1 , csa:Angina_TL2_MV2 .
+
+csa:Angina_TL2_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:HeartRateMeasurement ;
+    csa:hasValue csa:High .
+
+csa:Angina_TL2_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:BreathingRateMeasurement ;
+    csa:hasValue csa:High .
+
+
+# --- Head Injury ---
+csa:HeadInjury a csa:MedicalIssue ;
+    csa:medicalIssueSpecialty csa:TraumaSpeciality ;
+    csa:hasTreatmentLevel csa:HeadInjury_TL1 , csa:HeadInjury_TL2 .
+
+csa:HeadInjury_TL1 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:BasicLevel ;
+    csa:hasMeasurementValuePair csa:HeadInjury_TL1_MV1 , csa:HeadInjury_TL1_MV2 .
+
+csa:HeadInjury_TL1_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:MuscleTensionMeasurement ;
+    csa:hasValue csa:Medium .
+
+csa:HeadInjury_TL1_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:GroundHardnessMeasurement ;
+    csa:hasValue csa:Medium .
+
+csa:HeadInjury_TL2 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:IntermediateLevel ;
+    csa:hasMeasurementValuePair csa:HeadInjury_TL2_MV1 , csa:HeadInjury_TL2_MV2 .
+
+csa:HeadInjury_TL2_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:MuscleTensionMeasurement ;
+    csa:hasValue csa:High .
+
+csa:HeadInjury_TL2_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:GroundHardnessMeasurement ;
+    csa:hasValue csa:High .
+
+
+# --- Stroke ---
+csa:Stroke a csa:MedicalIssue ;
+    csa:medicalIssueSpecialty csa:NeurologicalSpeciality ;
+    csa:hasTreatmentLevel csa:Stroke_TL1 , csa:Stroke_TL2 .
+
+csa:Stroke_TL1 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:IntermediateLevel ;
+    csa:hasMeasurementValuePair csa:Stroke_TL1_MV1 , csa:Stroke_TL1_MV2 .
+
+csa:Stroke_TL1_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:MuscleTensionMeasurement ;
+    csa:hasValue csa:High .
+
+csa:Stroke_TL1_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:HeartRateMeasurement ;
+    csa:hasValue csa:High .
+
+csa:Stroke_TL2 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:AdvancedLevel ;
+    csa:hasMeasurementValuePair csa:Stroke_TL2_MV1 , csa:Stroke_TL2_MV2 .
+
+csa:Stroke_TL2_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:MuscleTensionMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+csa:Stroke_TL2_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:HeartRateMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+
+# --- Seizure ---
+csa:Seizure a csa:MedicalIssue ;
+    csa:medicalIssueSpecialty csa:NeurologicalSpeciality ;
+    csa:hasTreatmentLevel csa:Seizure_TL1 , csa:Seizure_TL2 .
+
+csa:Seizure_TL1 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:IntermediateLevel ;
+    csa:hasMeasurementValuePair csa:Seizure_TL1_MV1 , csa:Seizure_TL1_MV2 .
+
+csa:Seizure_TL1_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:EKGReadingMeasurement ;
+    csa:hasValue csa:High .
+
+csa:Seizure_TL1_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:MuscleTensionMeasurement ;
+    csa:hasValue csa:High .
+
+csa:Seizure_TL2 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:AdvancedLevel ;
+    csa:hasMeasurementValuePair csa:Seizure_TL2_MV1 , csa:Seizure_TL2_MV2 .
+
+csa:Seizure_TL2_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:EKGReadingMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+csa:Seizure_TL2_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:MuscleTensionMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+
+# --- Choking ---
+csa:Choking a csa:MedicalIssue ;
+    csa:medicalIssueSpecialty csa:RespiratorySpeciality ;
+    csa:hasTreatmentLevel csa:Choking_TL1 , csa:Choking_TL2 , csa:Choking_TL3 .
+
+csa:Choking_TL1 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:BasicLevel ;
+    csa:hasMeasurementValuePair csa:Choking_TL1_MV1 , csa:Choking_TL1_MV2 .
+
+csa:Choking_TL1_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:ChokingMeasurement ;
+    csa:hasValue csa:Medium .
+
+csa:Choking_TL1_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:AirflowMeasurement ;
+    csa:hasValue csa:Low .
+
+csa:Choking_TL2 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:IntermediateLevel ;
+    csa:hasMeasurementValuePair csa:Choking_TL2_MV1 , csa:Choking_TL2_MV2 .
+
+csa:Choking_TL2_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:ChokingMeasurement ;
+    csa:hasValue csa:High .
+
+csa:Choking_TL2_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:AirflowMeasurement ;
+    csa:hasValue csa:VeryLow .
+
+csa:Choking_TL3 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:AdvancedLevel ;
+    csa:hasMeasurementValuePair csa:Choking_TL3_MV1 , csa:Choking_TL3_MV2 .
+
+csa:Choking_TL3_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:ChokingMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+csa:Choking_TL3_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:AirflowMeasurement ;
+    csa:hasValue csa:VeryLow .
+
+
+# --- Asthma Attack ---
+csa:AsthmaAttack a csa:MedicalIssue ;
+    csa:medicalIssueSpecialty csa:RespiratorySpeciality ;
+    csa:hasTreatmentLevel csa:AsthmaAttack_TL1 , csa:AsthmaAttack_TL2 , csa:AsthmaAttack_TL3 .
+
+csa:AsthmaAttack_TL1 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:BasicLevel ;
+    csa:hasMeasurementValuePair csa:AsthmaAttack_TL1_MV1 , csa:AsthmaAttack_TL1_MV2 .
+
+csa:AsthmaAttack_TL1_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:AsthmaAttackMeasurement ;
+    csa:hasValue csa:Medium .
+
+csa:AsthmaAttack_TL1_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:BreathingRateMeasurement ;
+    csa:hasValue csa:High .
+
+csa:AsthmaAttack_TL2 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:IntermediateLevel ;
+    csa:hasMeasurementValuePair csa:AsthmaAttack_TL2_MV1 , csa:AsthmaAttack_TL2_MV2 .
+
+csa:AsthmaAttack_TL2_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:AsthmaAttackMeasurement ;
+    csa:hasValue csa:High .
+
+csa:AsthmaAttack_TL2_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:BreathingRateMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+csa:AsthmaAttack_TL3 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:AdvancedLevel ;
+    csa:hasMeasurementValuePair csa:AsthmaAttack_TL3_MV1 , csa:AsthmaAttack_TL3_MV2 .
+
+csa:AsthmaAttack_TL3_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:AsthmaAttackMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+csa:AsthmaAttack_TL3_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:BreathingRateMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+
+# --- Hyperventilation ---
+csa:Hyperventilation a csa:MedicalIssue ;
+    csa:medicalIssueSpecialty csa:RespiratorySpeciality ;
+    csa:hasTreatmentLevel csa:Hyperventilation_TL1 , csa:Hyperventilation_TL2 , csa:Hyperventilation_TL3 .
+
+csa:Hyperventilation_TL1 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:BasicLevel ;
+    csa:hasMeasurementValuePair csa:Hyperventilation_TL1_MV1 , csa:Hyperventilation_TL1_MV2 .
+
+csa:Hyperventilation_TL1_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:HyperventilationMeasurement ;
+    csa:hasValue csa:Medium .
+
+csa:Hyperventilation_TL1_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:BreathingRateMeasurement ;
+    csa:hasValue csa:High .
+
+csa:Hyperventilation_TL2 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:IntermediateLevel ;
+    csa:hasMeasurementValuePair csa:Hyperventilation_TL2_MV1 , csa:Hyperventilation_TL2_MV2 .
+
+csa:Hyperventilation_TL2_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:HyperventilationMeasurement ;
+    csa:hasValue csa:High .
+
+csa:Hyperventilation_TL2_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:BreathingRateMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+csa:Hyperventilation_TL3 a csa:TreatmentLevel ;
+    csa:requiresCertificationLevel csa:AdvancedLevel ;
+    csa:hasMeasurementValuePair csa:Hyperventilation_TL3_MV1 , csa:Hyperventilation_TL3_MV2 .
+
+csa:Hyperventilation_TL3_MV1 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:HyperventilationMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+csa:Hyperventilation_TL3_MV2 a csa:MeasurementValuePair ;
+    csa:hasMeasurement csa:BreathingRateMeasurement ;
+    csa:hasValue csa:VeryHigh .
+
+
+##
+
+##- Emergency
+csa:Emergency a rdfs:Class .
+csa:EmergencyStatus a rdfs:Class .
+csa:ReportedStatus rdfs:subClassOf csa:EmergencyStatus .
+csa:DispatchedStatus rdfs:subClassOf csa:EmergencyStatus .
+csa:InProgressStatus rdfs:subClassOf csa:EmergencyStatus .
+csa:ResolvedStatus rdfs:subClassOf csa:EmergencyStatus .
+csa:CancelledStatus rdfs:subClassOf csa:EmergencyStatus .
+csa:SeverityLevel a owl:Class ;
+    rdfs:subClassOf xsd:integer .
+
+csa:happensOn a owl:ObjectProperty ;
+    rdfs:domain csa:Emergency ;
+    rdfs:range csa:Patient .
+csa:hasEmergencyType a owl:ObjectProperty ;
+    rdfs:domain csa:Emergency ;
+    rdfs:range csa:EmergencyType .
+csa:triggeredBy a owl:ObjectProperty ;
+    rdfs:domain csa:EmergencyType ;
+    rdfs:range csa:Symptom .
+csa:hasEmergencyInstance a owl:ObjectProperty ;
+    rdfs:domain csa:Emergency ;
+    rdfs:range csa:EmergencyType .
+csa:respondedBy a owl:ObjectProperty ;
+    rdfs:domain csa:Emergency ;
+    rdfs:range csa:FirstResponder .
+csa:isRespondingTo a owl:ObjectProperty ;
+    owl:inverseOf csa:respondedBy ;
+    rdfs:domain csa:FirstResponder ;
+    rdfs:range csa:Emergency .
+csa:hasStatus a owl:ObjectProperty ;
+    rdfs:domain csa:Emergency ;
+    rdfs:range csa:EmergencyStatus .
+
+csa:statusTimestamp a owl:DatatypeProperty ;
+    rdfs:domain csa:EmergencyStatus ;
+    rdfs:range xsd:dateTime .
+csa:hasSeverity a owl:ObjectProperty ;
+    rdfs:domain csa:EmergencyType ;
+    rdfs:range csa:SeverityLevel .
+
+csa:Emergency rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty csa:happensOn ;
+    owl:cardinality 1 ;
+] .
+csa:Emergency rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty csa:hasStatus ;
+    owl:cardinality 1 ;
+] .
+csa:EmergencyStatus rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty csa:statusTimestamp;
+    owl:cardinality 1 ;
+] .
+##
+
+##- Specialities
+csa:MedicalSpecialty a owl:Class .
+
+csa:CardiacSpeciality a csa:MedicalSpecialty .
+csa:TraumaSpeciality a csa:MedicalSpecialty .
+csa:NeurologicalSpeciality a csa:MedicalSpecialty .
+csa:RespiratorySpeciality a csa:MedicalSpecialty .
+
+_:disjointMedicalSpecialty a owl:AllDisjointClasses ;
+    owl:members (
+        csa:CardiacSpeciality
+        csa:TraumaSpeciality
+        csa:NeurologicalSpeciality
+        csa:RespiratorySpeciality
+    ) .
+
+csa:certificationSpecialty a owl:ObjectProperty ;
+    rdfs:domain csa:Certification ;
+    rdfs:range csa:MedicalSpecialty .
+
+csa:medicalIssueSpecialty a owl:ObjectProperty ;
+    rdfs:domain csa:MedicalIssue ;
+    rdfs:range csa:MedicalSpecialty .
+
+
+csa:8a9b3c2d-1e4f-6g7h-9i0j a csa:FirstResponder ;
+    csa:hasName "Alex" ;
+    csa:locatedAt csa:1a9b3c2d-1e4f-6g7h-9i ;
+    csa:holdsCertification [ 
+        a csa:Certification ;
+        csa:hasCertificationLevel csa:IntermediateLevel ;
+        csa:certificationSpecialty csa:CardiacSpeciality
+    ] ;
+    csa:hasHealthMeasurement [
+        a csa:MeasurementValuePair ;
+        csa:hasMeasurement csa:HeartRateMeasurement ;
+        csa:hasValue csa:VeryHigh
+    ] ;
+    csa:hasHealthMeasurement [
+        a csa:MeasurementValuePair ;
+        csa:hasMeasurement csa:EKGReadingMeasurement ;
+        csa:hasValue csa:VeryHigh
+    ] ;
+    csa:hasHealthMeasurement [
+        a csa:MeasurementValuePair ;
+        csa:hasMeasurement csa:BreathingRateMeasurement ;
+        csa:hasValue csa:VeryHigh
+    ] ;
+    csa:hasSSN "0" .
+
+csa:8a9b3c2d-1e4f-6g7h-9i0a a csa:FirstResponder ;
+    csa:hasName "Alex2" ;
+    csa:locatedAt csa:1a9b3c2d-1e4f-6g7h-9i ;
+    csa:holdsCertification [
+        a csa:Certification ;
+        csa:hasCertificationLevel csa:IntermediateLevel ;
+        csa:certificationSpecialty csa:CardiacSpeciality
+    ] ;
+    csa:hasHealthMeasurement [
+        a csa:MeasurementValuePair ;
+        csa:hasMeasurement csa:GroundHardnessMeasurement ;
+        csa:hasValue csa:Low
+    ] ;
+    csa:hasSSN "1" .
+
+
+csa:matchesMeasurement a owl:ObjectProperty ;
+    rdfs:domain csa:Person ;
+    rdfs:range csa:TreatmentLevel .
+
+csa:hasDetectedMedicalIssue a owl:ObjectProperty ;
+    rdfs:domain csa:Person ;
+    rdfs:range csa:MedicalIssue .
+
+csa:qualifiedForEmergency a owl:ObjectProperty ;
+    rdfs:domain csa:FirstResponder ;
+    rdfs:range csa:Emergency .
+
+csa:hasSymptomProfile a owl:ObjectProperty ;
+    rdfs:domain csa:Person ;
+    rdfs:range csa:SymptomProfile .
+
+csa:matchesMedicalIssue a owl:ObjectProperty ;
+    rdfs:domain csa:SymptomProfile ;
+    rdfs:range csa:MedicalIssue .
+
+
+csa:8a9b3c2d-1e4f-6g7h-a a csa:FirstResponder ;
+    csa:hasName "Rohit" ;
+    csa:locatedAt csa:1a9b3c2d-1e4f-6g7h-9i ;
+    csa:holdsCertification [
+        a csa:Certification ;
+        csa:hasCertificationLevel csa:IntermediateLevel ;
+        csa:certificationSpecialty csa:TraumaSpeciality
+    ] ;
+     csa:holdsCertification [
+        a csa:Certification ;
+        csa:hasCertificationLevel csa:BasicLevel ;
+        csa:certificationSpecialty csa:TraumaSpeciality
+    ] ;
+
+###
+
+csa:declinedEmergency a owl:ObjectProperty ;
+    rdfs:domain csa:Person ;
+    rdfs:range csa:Emergency .
+    .

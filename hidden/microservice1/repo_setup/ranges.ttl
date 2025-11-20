@@ -1,0 +1,217 @@
+# Implementation of Ranges
+
+
+csa:HeartAttackRange owl:equivalentClass [
+        a owl:Restriction ;
+          owl:onProperty csa:hasHeartRate ;
+          owl:someValuesFrom [
+              a rdfs:Datatype ;
+              owl:onDatatype xsd:integer ;
+              owl:withRestrictions ( [ xsd:minInclusive 140 ] )
+          ]
+] .
+
+
+csa:CardiacArrestRange owl:equivalentClass [
+         a owl:Restriction ;
+          owl:onProperty csa:hasHeartRate ;
+          owl:someValuesFrom [
+              a rdfs:Datatype ;
+              owl:onDatatype xsd:integer ;
+              owl:withRestrictions ( [ xsd:maxInclusive 30 ] )
+          ]
+
+] .
+
+csa:AnginaRange owl:equivalentClass [
+         a owl:Restriction ;
+          owl:onProperty csa:hasInflamatories ;
+          owl:someValuesFrom [
+              a rdfs:Datatype ;
+              owl:onDatatype xsd:integer ;
+              owl:withRestrictions ( [ xsd:minInclusive 100 ] )
+          ]
+
+] .
+
+csa:SimpleFractureRange owl:equivalentClass [
+
+         a owl:Restriction ;
+          owl:onProperty csa:hitGroundWithHardness ;
+          owl:someValuesFrom [
+              a rdfs:Datatype ;
+              owl:onDatatype xsd:integer ;
+              owl:withRestrictions ( [ xsd:minInclusive 3 ] [ xsd:maxInclusive 5 ] )
+          ]
+
+] .
+
+csa:CompoundFactureRange owl:equivalentClass [
+         a owl:Restriction ;
+          owl:onProperty csa:hitGroundWithHardness ;
+          owl:someValuesFrom [
+              a rdfs:Datatype ;
+              owl:onDatatype xsd:integer ;
+              owl:withRestrictions ( [xsd:minInclusive 6 ] )
+          ]
+
+] .
+
+csa:HeadInjuryRange owl:equivalentClass [
+         a owl:Restriction ;
+          owl:onProperty csa:hitHeadGroundWithHardness ;
+          owl:someValuesFrom [
+              a rdfs:Datatype ;
+              owl:onDatatype xsd:integer ;
+              owl:withRestrictions ( [xsd:minInclusive 2 ] )
+          ]
+
+] .
+
+csa:StrokeRange owl:equivalentClass [
+         a owl:Restriction ;
+          owl:onProperty csa:ekgReading ;
+          owl:someValuesFrom [
+              a rdfs:Datatype ;
+              owl:onDatatype xsd:integer ;
+              owl:withRestrictions ( [xsd:minInclusive 3 ] )
+          ]
+
+] .
+
+
+csa:SeizureRange owl:equivalentClass [
+         a owl:Restriction ;
+          owl:onProperty csa:muscleTension ;
+          owl:someValuesFrom [
+              a rdfs:Datatype ;
+              owl:onDatatype xsd:integer ;
+              owl:withRestrictions ( [xsd:minInclusive 3 ] )
+          ]
+
+] .
+
+csa:ChokingRange owl:equivalentClass [
+         a owl:Restriction ;
+          owl:onProperty csa:hasAirflow ;
+          owl:someValuesFrom [
+              a rdfs:Datatype ;
+              owl:onDatatype xsd:integer ;
+              owl:withRestrictions ( [xsd:minInclusive 3 ] )
+          ]
+
+] .
+
+
+csa:AsthmaRange owl:equivalentClass [
+         a owl:Restriction ;
+          owl:onProperty csa:hasBreathingRate ;
+          owl:someValuesFrom [
+              a rdfs:Datatype ;
+              owl:onDatatype xsd:integer ;
+              owl:withRestrictions ( [xsd:minInclusive 40 ] )
+          ]
+
+] .
+
+csa:HyperventilationRange owl:equivalentClass [
+        a owl:Restriction ;
+        owl:onProperty csa:hasBreathingRate ;
+        owl:someValuesFrom [
+            a rdfs:Datatype ;
+            owl:onDatatype xsd:integer ;
+            owl:withRestrictions ( [xsd:minInclusive 90 ] )
+        ]
+
+] .
+
+
+###
+
+csa:BasicCertification owl:equivalentClass [
+    a owl:Restriction ;
+    owl:onProperty csa:enablesToHandleEmergency ;
+    owl:someValuesFrom [
+        a owl:Restriction ;
+        owl:onProperty csa:hasSeverity ;
+        owl:hasValue 1
+    ]
+] .
+
+csa:IntermediateCertification owl:equivalentClass [
+    a owl:Class ;
+    owl:unionOf (
+        [ a owl:Restriction ;
+          owl:onProperty csa:enablesToHandleEmergency ;
+          owl:someValuesFrom [
+              a owl:Restriction ;
+              owl:onProperty csa:hasSeverity ;
+              owl:hasValue 2
+          ]
+        ]
+        [ a owl:Restriction ;
+          owl:onProperty csa:enablesToHandleEmergency ;
+          owl:someValuesFrom [
+              a owl:Restriction ;
+              owl:onProperty csa:hasSeverity ;
+              owl:hasValue 3
+          ]
+        ]
+    )
+] .
+
+csa:AdvancedCertification owl:equivalentClass [
+    a owl:Class ;
+    owl:unionOf (
+        [ a owl:Restriction ;
+          owl:onProperty csa:enablesToHandleEmergency ;
+          owl:someValuesFrom [
+              a owl:Restriction ;
+              owl:onProperty csa:hasSeverity ;
+              owl:hasValue 4
+          ]
+        ]
+        [ a owl:Restriction ;
+          owl:onProperty csa:enablesToHandleEmergency ;
+          owl:someValuesFrom [
+              a owl:Restriction ;
+              owl:onProperty csa:hasSeverity ;
+              owl:hasValue 5
+          ]
+        ]
+    )
+] .
+
+
+###
+
+csa:hasHeartRate a owl:DatatypeProperty ;
+        rdfs:domain csa:MedicalSensor ;
+        rdfs:range xsd:integer .
+    csa:hasInflamatories a owl:DatatypeProperty ;
+        rdfs:domain csa:MedicalSensor ;
+        rdfs:range xsd:integer .
+    csa:hitGroundWithHardness a owl:DatatypeProperty ;
+        rdfs:domain csa:MedicalSensor ;
+        rdfs:range xsd:integer .
+    csa:ekgReading a owl:DatatypeProperty ;
+        rdfs:domain csa:MedicalSensor ;
+        rdfs:range xsd:integer .
+    csa:muscleTension a owl:DatatypeProperty ;
+        rdfs:domain csa:MedicalSensor ;
+        rdfs:range xsd:integer .
+    csa:hasAirflow a owl:DatatypeProperty ;
+        rdfs:domain csa:MedicalSensor ;
+        rdfs:range xsd:integer .
+    csa:Choking a owl:DatatypeProperty ;
+        rdfs:domain csa:MedicalSensor ;
+        rdfs:range xsd:integer .
+    csa:hasBreathingRate a owl:DatatypeProperty ;
+        rdfs:domain csa:MedicalSensor ;
+        rdfs:range xsd:integer .
+    csa:AsthmaAttack a owl:DatatypeProperty ;
+        rdfs:domain csa:MedicalSensor ;
+        rdfs:range xsd:integer .
+    csa:Hyperventilation a owl:DatatypeProperty ;
+        rdfs:domain csa:MedicalSensor ;
+        rdfs:range xsd:integer .

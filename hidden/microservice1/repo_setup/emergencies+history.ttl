@@ -1,0 +1,444 @@
+######## Prefixes #######################
+
+@prefix csa: <https://omilab.org/experiments/city-swift-aid#> .
+@prefix support: <https://omilab.org/experiments/city-swift-aid/support-definitions> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema: <https://schema.org/> .
+@prefix ex: <http://example.org/schema#> .
+
+
+##StreetNetwork 
+    # Classes
+    csa:Street a rdfs:Class .
+    csa:StreetSegment rdfs:subClassOf csa:Street .
+    
+    # Object Properties
+    csa:connectedTo a owl:TransitiveProperty, owl:SymmetricProperty ;
+        rdfs:domain csa:StreetSegment ;
+        rdfs:range csa:StreetSegment .
+    
+    # Data Properties
+    csa:hasStreetName a owl:DatatypeProperty ;
+        rdfs:domain csa:StreetSegment ;
+        rdfs:range xsd:string .
+    csa:hasLengthMeters a owl:DatatypeProperty ;
+        rdfs:domain csa:StreetSegment ;
+        rdfs:range xsd:double .
+
+
+##People
+    # Classes
+    csa:Person a rdfs:Class .
+    csa:FirstResponder rdfs:subClassOf csa:Person .   
+    csa:Patient rdfs:subClassOf csa:Person .
+    
+    # Object Properties
+    csa:locatedAt a owl:ObjectProperty ;
+        rdfs:domain csa:Person ;
+        rdfs:range csa:StreetSegment .
+    csa:respondsTo a owl:AsymmetricProperty ;
+        rdfs:domain csa:FirstResponder ;
+        rdfs:range csa:Emergency .
+    csa:hasCertification a owl:ObjectProperty ;
+        rdfs:domain csa:FirstResponder ;
+        rdfs:range csa:Certification .
+    csa:hasDenialPolicy a owl:ObjectProperty ;
+        rdfs:domain csa:Person ;
+        rdfs:range csa:FirstResponderPolicy .
+    csa:hasSSN a owl:InverseFunctionalProperty , owl:FunctionalProperty ;
+        rdfs:domain csa:Person;
+        rdfs:range xsd:string .
+    csa:hasSensor a owl:InverseFunctionalProperty , owl:FunctionalProperty ;  
+        rdfs:domain csa:Person ;
+        rdfs:range csa:MedicalSensor . 
+    csa:hasMedicalHistoryEntry a owl:ObjectProperty ;
+        rdfs:domain csa:Person;
+        rdfs:range csa:MedicalHistoryEntry .
+    csa:canRespondTo a owl:ObjectProperty ;
+        rdfs:domain csa:Person;
+        rdfs:range csa:Emergency .
+
+    # Data Properties
+    csa:denialsToday a owl:DatatypeProperty ;
+        rdfs:domain csa:FirstResponder ;
+        rdfs:range xsd:integer .
+
+    csa:canDenyRequest a owl:DatatypeProperty;
+        rdfs:domain csa:FirstResponder;
+        rdfs:range xsd:boolean .
+
+    csa:hasName a owl:DatatypeProperty ; 
+        rdfs:domain csa:Person ;
+        rdfs:range xsd:string .
+    
+    csa:Person rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty csa:hasSSN ;
+    owl:cardinality 1;
+    ] .
+
+    csa:Person rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty csa:hasName ;
+    owl:cardinality 1;
+    ] .
+
+    csa:Person rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty csa:locatedAt ;
+    owl:cardinality 1;
+    ] .
+
+##FirstResponderPolicies 
+    csa:DenialPolicy a owl:Class .
+    csa:Condition a owl:Class .
+    csa:FirstResponderPolicy a owl:Class .
+    csa:EmergencyType a owl:Class .
+
+
+    # Object Properties
+    csa:denialCondition a owl:ObjectProperty ;
+        rdfs:domain csa:FirstResponderPolicy ;
+        rdfs:range csa:Condition .
+
+    #Data types
+     csa:maxDenialsPerDay a owl:DatatypeProperty ;
+        rdfs:domain csa:DenialPolicy ;
+        rdfs:range xsd:integer .
+
+    csa:onlyAllowDenialIfSeverityBelow a owl:DatatypeProperty ;
+        rdfs:domain csa:Condition ;
+        rdfs:range xsd:integer .
+
+    ##PolicyInstance 
+
+    csa:FirstResponderPolicyInstance a csa:FirstResponderPolicy ;
+    csa:maxDenialsPerDay 3 ;
+    csa:denialCondition [
+        a csa:Condition ;
+        csa:onlyAllowDenialIfSeverityBelow "4"^^xsd:integer ;
+    ] .
+
+
+##MedicalSensor
+    csa:MedicalSensor a owl:Class .
+
+    csa:hasCategory a owl:ObjectProperty ;
+        rdfs:domain csa:MedicalSensor ;
+        rdfs:range csa:Category ;
+
+    csa:HeartRateCategory a owl:Class .
+    csa:VeryLowHeartRate a owl:Class ; rdfs:subClassOf csa:HeartRateCategory .
+    csa:LowHeartRate a owl:Class ; rdfs:subClassOf csa:HeartRateCategory .
+    csa:MediumHeartRate a owl:Class ; rdfs:subClassOf csa:HeartRateCategory .
+    csa:HighHeartRate a owl:Class ; rdfs:subClassOf csa:HeartRateCategory .
+    csa:VeryHighHeartRate a owl:Class ; rdfs:subClassOf csa:HeartRateCategory .
+
+    _:disjointHeartRates a owl:AllDisjointClasses ;
+    owl:members (csa:VeryLowHeartRate csa:LowHeartRate csa:MediumHeartRate csa:HighHeartRate csa:VeryHighHeartRate) .
+
+    csa:InflammatoryCategory a owl:Class .
+    csa:VeryLowInflammatory a owl:Class ; rdfs:subClassOf csa:InflammatoryCategory .
+    csa:LowInflammatory a owl:Class ; rdfs:subClassOf csa:InflammatoryCategory .
+    csa:MediumInflammatory a owl:Class ; rdfs:subClassOf csa:InflammatoryCategory .
+    csa:HighInflammatory a owl:Class ; rdfs:subClassOf csa:InflammatoryCategory .
+    csa:VeryHighInflammatory a owl:Class ; rdfs:subClassOf csa:InflammatoryCategory .
+
+    _:disjointInflammatory a owl:AllDisjointClasses ;
+    owl:members (csa:VeryLowInflammatory csa:LowInflammatory csa:MediumInflammatory csa:HighInflammatory csa:VeryHighInflammatory) .
+
+    csa:GroundHardnessCategory a owl:Class .
+    csa:VeryLowGroundHardness a owl:Class ; rdfs:subClassOf csa:GroundHardnessCategory .
+    csa:LowGroundHardness a owl:Class ; rdfs:subClassOf csa:GroundHardnessCategory .
+    csa:MediumGroundHardness a owl:Class ; rdfs:subClassOf csa:GroundHardnessCategory .
+    csa:HighGroundHardness a owl:Class ; rdfs:subClassOf csa:GroundHardnessCategory .
+    csa:VeryHighGroundHardness a owl:Class ; rdfs:subClassOf csa:GroundHardnessCategory .
+
+    _:disjointGroundHardness a owl:AllDisjointClasses ;
+    owl:members (csa:VeryLowGroundHardness csa:LowGroundHardness csa:MediumGroundHardness csa:HighGroundHardness csa:VeryHighGroundHardness) .
+
+    csa:EKGReadingCategory a owl:Class .
+    csa:VeryLowEKGReading a owl:Class ; rdfs:subClassOf csa:EKGReadingCategory .
+    csa:LowEKGReading a owl:Class ; rdfs:subClassOf csa:EKGReadingCategory .
+    csa:MediumEKGReading a owl:Class ; rdfs:subClassOf csa:EKGReadingCategory .
+    csa:HighEKGReading a owl:Class ; rdfs:subClassOf csa:EKGReadingCategory .
+    csa:VeryHighEKGReading a owl:Class ; rdfs:subClassOf csa:EKGReadingCategory .
+
+    _:disjointEKGReading a owl:AllDisjointClasses ;
+    owl:members (csa:VeryLowEKGReading csa:LowEKGReading csa:MediumEKGReading csa:HighEKGReading csa:VeryHighEKGReading) .
+
+    csa:MuscleTensionCategory a owl:Class .
+    csa:VeryLowMuscleTension a owl:Class ; rdfs:subClassOf csa:MuscleTensionCategory .
+    csa:LowMuscleTension a owl:Class ; rdfs:subClassOf csa:MuscleTensionCategory .
+    csa:MediumMuscleTension a owl:Class ; rdfs:subClassOf csa:MuscleTensionCategory .
+    csa:HighMuscleTension a owl:Class ; rdfs:subClassOf csa:MuscleTensionCategory .
+    csa:VeryHighMuscleTension a owl:Class ; rdfs:subClassOf csa:MuscleTensionCategory .
+
+    _:disjointMuscleTension a owl:AllDisjointClasses ;
+    owl:members (csa:VeryLowMuscleTension csa:LowMuscleTension csa:MediumMuscleTension csa:HighMuscleTension csa:VeryHighMuscleTension) .
+
+    csa:AirflowCategory a owl:Class .
+    csa:VeryLowAirflow a owl:Class ; rdfs:subClassOf csa:AirflowCategory .
+    csa:LowAirflow a owl:Class ; rdfs:subClassOf csa:AirflowCategory .
+    csa:MediumAirflow a owl:Class ; rdfs:subClassOf csa:AirflowCategory .
+    csa:HighAirflow a owl:Class ; rdfs:subClassOf csa:AirflowCategory .
+    csa:VeryHighAirflow a owl:Class ; rdfs:subClassOf csa:AirflowCategory .
+
+    _:disjointAirflow a owl:AllDisjointClasses ;
+    owl:members (csa:VeryLowAirflow csa:LowAirflow csa:MediumAirflow csa:HighAirflow csa:VeryHighAirflow) .
+
+    csa:ChokingCategory a owl:Class .
+    csa:MediumChoking a owl:Class ; rdfs:subClassOf csa:ChokingCategory .
+    csa:HighChoking a owl:Class ; rdfs:subClassOf csa:ChokingCategory .
+    csa:VeryHighChoking a owl:Class ; rdfs:subClassOf csa:ChokingCategory .
+
+    _:disjointChoking a owl:AllDisjointClasses ;
+    owl:members (csa:MediumChoking csa:HighChoking csa:VeryHighChoking) .
+
+    csa:BreathingRateCategory a owl:Class .
+    csa:VeryLowBreathingRate a owl:Class ; rdfs:subClassOf csa:BreathingRateCategory .
+    csa:LowBreathingRate a owl:Class ; rdfs:subClassOf csa:BreathingRateCategory .
+    csa:MediumBreathingRate a owl:Class ; rdfs:subClassOf csa:BreathingRateCategory .
+    csa:HighBreathingRate a owl:Class ; rdfs:subClassOf csa:BreathingRateCategory .
+    csa:VeryHighBreathingRate a owl:Class ; rdfs:subClassOf csa:BreathingRateCategory .
+
+    _:disjointBreathingRate a owl:AllDisjointClasses ;
+    owl:members (csa:VeryLowBreathingRate csa:LowBreathingRate csa:MediumBreathingRate csa:HighBreathingRate csa:VeryHighBreathingRate) .
+
+    csa:AsthmaAttackCategory a owl:Class .
+    csa:MediumAsthmaAttack a owl:Class ; rdfs:subClassOf csa:AsthmaAttackCategory .
+    csa:HighAsthmaAttack a owl:Class ; rdfs:subClassOf csa:AsthmaAttackCategory .
+    csa:VeryHighAsthmaAttack a owl:Class ; rdfs:subClassOf csa:AsthmaAttackCategory .
+
+    _:disjointAsthmaAttack a owl:AllDisjointClasses ;
+    owl:members (csa:MediumAsthmaAttack csa:HighAsthmaAttack csa:VeryHighAsthmaAttack) .
+
+    csa:HyperventilationCategory a owl:Class .
+    csa:VeryLowHyperventilation a owl:Class ; rdfs:subClassOf csa:HyperventilationCategory .
+    csa:LowHyperventilation a owl:Class ; rdfs:subClassOf csa:HyperventilationCategory .
+    csa:MediumHyperventilation a owl:Class ; rdfs:subClassOf csa:HyperventilationCategory .
+    csa:HighHyperventilation a owl:Class ; rdfs:subClassOf csa:HyperventilationCategory .
+    csa:VeryHighHyperventilation a owl:Class ; rdfs:subClassOf csa:HyperventilationCategory .
+
+    _:disjointHyperventilation a owl:AllDisjointClasses ;
+    owl:members (csa:VeryLowHyperventilation csa:LowHyperventilation csa:MediumHyperventilation csa:HighHyperventilation csa:VeryHighHyperventilation) .
+
+
+
+
+
+## Medical history
+    csa:MedicalHistoryEntry a rdfs:Class .
+
+    csa:hasNote a owl:DatatypeProperty ;
+     rdfs:domain csa:MedicalHistoryEntry ;
+     rdfs:range xsd:string .
+
+    csa:hadEmergency a owl:ObjectProperty ;
+     rdfs:domain csa:MedicalHistoryEntry ;
+     rdfs:range csa:Emergency .
+
+    csa:MedicalHistoryEntry rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty csa:hadEmergency ;
+    owl:cardinality 1 ;
+    ] .
+
+    csa:MedicalHistoryEntry rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty csa:hasNote ;
+    owl:cardinality 1 ;
+    ] .
+
+##csa:Emergencies
+    # Classes
+    csa:Emergency a rdfs:Class .
+    csa:EmergencyStatus a rdfs:Class .
+    csa:ReportedStatus rdfs:subClassOf csa:EmergencyStatus .
+    csa:DispatchedStatus rdfs:subClassOf csa:EmergencyStatus .
+    csa:InProgressStatus rdfs:subClassOf csa:EmergencyStatus .
+    csa:ResolvedStatus rdfs:subClassOf csa:EmergencyStatus .
+    csa:CancelledStatus rdfs:subClassOf csa:EmergencyStatus .
+    csa:SeverityLevel a owl:Class ;
+        rdfs:subClassOf xsd:integer .
+
+    # Object Properties
+
+    csa:happensOn a owl:ObjectProperty ;
+        rdfs:domain csa:Emergency ;
+        rdfs:range csa:Patient .
+
+    csa:hasEmergencyType a owl:ObjectProperty ;
+        rdfs:domain csa:Emergency ;
+        rdfs:range csa:EmergencyType .
+
+    csa:hasEmergencyInstance a owl:ObjectProperty ;
+        rdfs:domain csa:Emergency ;
+        rdfs:range csa:EmergencyType .
+
+    csa:respondedBy a owl:ObjectProperty ;
+        rdfs:domain csa:Emergency ;
+        rdfs:range csa:FirstResponder .
+
+    csa:isRespondingTo a owl:ObjectProperty ;
+        owl:inverseOf csa:respondedBy ;
+        rdfs:domain csa:FirstResponder ;
+        rdfs:range csa:Emergency .
+
+    csa:hasStatus a owl:ObjectProperty ;
+        rdfs:domain csa:Emergency ;
+        rdfs:range csa:EmergencyStatus .
+
+    # Data Properties
+    csa:statusTimestamp a owl:DatatypeProperty ;
+        rdfs:domain csa:EmergencyStatus ;
+        rdfs:range xsd:dateTime .
+
+    ### Emergency Properties ###
+    csa:hasSeverity a owl:ObjectProperty ;
+        rdfs:domain csa:EmergencyType ;
+        rdfs:range csa:SeverityLevel .
+
+    csa:Emergency rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty csa:happensOn ;
+    owl:cardinality 1 ;
+    ] .
+
+    csa:Emergency rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty csa:hasStatus ;
+    owl:cardinality 1 ;
+    ] .
+
+    csa:EmergencyStatus rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty csa:statusTimestamp;
+    owl:cardinality 1 ;
+    ] .
+
+    csa:SeverityLevel rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onDatatype xsd:integer ;
+        owl:withRestrictions (
+            [ xsd:minInclusive 1 ]
+            [ xsd:maxInclusive 5 ]
+        )
+    ] .
+
+
+# Emergency categories
+csa:CardiacEmergency a owl:Class ;
+    rdfs:subClassOf csa:EmergencyType .
+
+csa:TraumaEmergency a owl:Class ;
+    rdfs:subClassOf csa:EmergencyType .
+
+csa:NeurologicalEmergency a owl:Class ;
+    rdfs:subClassOf csa:EmergencyType .
+
+csa:RespiratoryEmergency a owl:Class ;
+    rdfs:subClassOf csa:EmergencyType .
+
+_:disjointEmergencies a owl:AllDisjointClasses ;
+    owl:members (
+        csa:CardiacEmergency
+        csa:TraumaEmergency
+        csa:NeurologicalEmergency
+        csa:RespiratoryEmergency
+    ) .
+
+
+
+### Emergency Instances ###
+csa:HeartAttack rdfs:subClassOf csa:CardiacEmergency ;
+    csa:triggeredBy csa:HeartAttackRange .
+csa:SimpleFracture rdfs:subClassOf csa:TraumaEmergency ;
+    csa:triggeredBy csa:SimpleFractureRange .
+csa:CardiacArrest rdfs:subClassOf csa:CardiacEmergency ;
+    csa:triggeredBy csa:CardiacArrestRange .
+csa:Angina rdfs:subClassOf csa:CardiacEmergency ;
+    csa:triggeredBy csa:AnginaRange .
+csa:CompoundFracture rdfs:subClassOf csa:TraumaEmergency ;
+    csa:triggeredBy csa:CompoundFactureRange .
+csa:HeadInjury rdfs:subClassOf csa:TraumaEmergency ;
+    csa:triggeredBy csa:HeadInjuryRange .
+csa:Stroke rdfs:subClassOf csa:NeurologicalEmergency ;
+    csa:triggeredBy csa:StrokeRange .
+csa:Seizure rdfs:subClassOf csa:NeurologicalEmergency ;
+    csa:triggeredBy csa:SeizureRange .
+csa:Choking rdfs:subClassOf csa:RespiratoryEmergency ;
+    csa:triggeredBy csa:ChokingRange .
+csa:AsthmaAttack rdfs:subClassOf csa:RespiratoryEmergency ;
+    csa:triggeredBy csa:AsthmaRange .
+csa:Hyperventilation rdfs:subClassOf csa:RespiratoryEmergency ;
+    csa:triggeredBy csa:HyperventilationRange .
+
+
+
+
+
+
+### Certifications ###
+csa:Certification a owl:Class .
+
+# Certification Levels 
+csa:BasicCertification a owl:Class ;
+    rdfs:subClassOf csa:Certification .
+
+csa:IntermediateCertification a owl:Class ;
+    rdfs:subClassOf csa:Certification ;
+    owl:disjointWith csa:BasicCertification .
+
+csa:AdvancedCertification a owl:Class ;
+    rdfs:subClassOf csa:Certification ;
+    owl:disjointWith csa:IntermediateCertification .
+
+### Certification Properties ###
+csa:holdsCertification a owl:ObjectProperty ;
+    rdfs:domain csa:Person ;
+    rdfs:range csa:Certification .
+
+
+### Certification Instances ###
+csa:BasicCardiacCertification a csa:BasicCertification ;
+
+csa:IntermediateCardiacCertification a csa:IntermediateCertification ;
+csa:AdvancedCardiacCertification a csa:AdvancedCertification ;
+csa:BasicTraumaCertification a csa:BasicCertification ;
+csa:IntermediateTraumaCertification a csa:IntermediateCertification ;
+csa:AdvancedTraumaCertification a csa:AdvancedCertification ;
+csa:BasicNeurologicalCertification a csa:BasicCertification ;
+csa:IntermediateNeurologicalCertification a csa:IntermediateCertification ;
+csa:AdvancedNeurologicalCertification a csa:AdvancedCertification ;
+csa:BasicRespiratoryCertification a csa:BasicCertification ;
+csa:IntermediateRespiratoryCertification a csa:IntermediateCertification ;
+csa:AdvancedRespiratoryCertification a csa:AdvancedCertification ;
+
+
+### Certification Mapping Rules ###
+#The higher the certification level, the higher the emergency level that one can handle.
+
+
+##csa:CitizenInstances 
+    csa:8a9b3c2d-1e4f-6g7h-9i0j a csa:FirstResponder ;
+        csa:hasName "Alex" ;
+        csa:locatedAt csa:1a9b3c2d-1e4f-6g7h-9i ;
+        csa:hasCategory csa:MediumHeartRate
+
+        csa:holdsCertification csa:AdvancedCardiacCertification ;
+        csa:holdsCertification csa:IntermediateTraumaCertification ;
+        csa:hasMedicalHistoryEntry [
+            a csa:MedicalHistoryEntry ;
+            csa:hasNote "Broke left ankle" ;
+            csa:hadEmergency csa:TraumaEmergency
+        ] ;
+        csa:hasSSN "0" .
+
+
+
+
+    

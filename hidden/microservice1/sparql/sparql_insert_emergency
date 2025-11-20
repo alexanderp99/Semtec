@@ -1,0 +1,13 @@
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+    INSERT DATA {
+        csa:Emergency003 a csa:Emergency ;
+        csa:happensOn csa:8a9b3c2d-1e4f-6g7h-9i0e;
+    	csa:hasEmergencyType csa:TraumaEmergency ;
+        csa:hasStatus [
+            a csa:ReportedStatus ;
+            csa:statusTimestamp "2023-06-15T14:30:00Z"^^xsd:dateTime
+    ] .
+    }

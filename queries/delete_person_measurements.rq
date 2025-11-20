@@ -1,0 +1,9 @@
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+
+DELETE {
+    ?person csa:hasHealthMeasurement ?measurement .
+}
+WHERE {
+    ?person csa:hasSSN "{ssn}" ;
+            csa:hasHealthMeasurement ?measurement .
+}

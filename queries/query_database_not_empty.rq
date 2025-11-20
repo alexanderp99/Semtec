@@ -1,0 +1,5 @@
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+
+ASK {
+    ?s ?p ?o .
+}
