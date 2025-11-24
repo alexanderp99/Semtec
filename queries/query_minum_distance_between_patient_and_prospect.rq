@@ -1,0 +1,13 @@
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+
+SELECT (SUM(?distance) as ?totalDistance)
+WHERE {
+  VALUES (?start ?end) { (csa:{edge_from} csa:{edge_to}) }
+  ?start csa:connectedTo ?mid .
+  ?mid csa:connectedTo ?next .
+  ?mid csa:hasLengthMeters ?distance .
+
+  FILTER(?next = ?end)
+}
+ORDER BY ASC(?totalDistance)
+LIMIT 1

@@ -248,6 +248,7 @@ class EmergencyHelpResponse:
 @dataclass
 class HealthMessage:
     patient_ssn: int
+    patient_edge: str
     measurements: List[HealthMeasurement]
 
 

@@ -4,6 +4,8 @@ from broadcaster import Broadcast
 import simpy
 import asyncio
 import threading
+from threading import Lock
+
 
 
 class Simpy:
@@ -11,9 +13,20 @@ class Simpy:
         self.broadcast = broadcast
         self.loop = loop
         self.env = simpy.Environment()
-        self.simulation_running = False
+        self._simulation_running: bool = False
+        self._simulation_lock = Lock()
         self.simulation_thread = None
-        self.graph_data:GraphData = GraphGenerator.generate_graph_data()
+        self.graph_data: GraphData = GraphGenerator.generate_graph_data()
+
+    @property
+    def simulation_running(self):
+        with self._simulation_lock:
+            return self._simulation_running
+
+    @simulation_running.setter
+    def simulation_running(self, value: bool):
+        with self._simulation_lock:
+            self._simulation_running = value
 
     async def start(self):
         await self.broadcast.connect()
@@ -76,6 +89,7 @@ class Simpy:
 
         message:HealthMessage = HealthMessage(
                 patient_ssn=person.ssn,
+                patient_edge=person.target,
                 measurements=person.measurements
         )
 

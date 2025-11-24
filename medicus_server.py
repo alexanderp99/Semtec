@@ -12,7 +12,7 @@ from new_dataclasses import *
 
 
 class MedicusService:
-    def __init__(self, broadcast: Broadcast,loop):
+    def __init__(self, broadcast: Broadcast, loop):
         self.broadcast = broadcast
         self.loop = loop
         self.app = FastAPI(title="Medicus API")
@@ -67,7 +67,7 @@ class MedicusService:
         query = self._load_query_template("./queries/delete_person_measurements.rq", replacement)
         self._insert_query(query)
 
-    async def notify_closest_responder(self, patient_ssn, first_responder_ssn:int, responder_can_decline:bool):
+    async def notify_closest_responder(self, patient_ssn, first_responder_ssn: int, responder_can_decline: bool):
 
         await self.broadcast.publish(
             Channel.HEALTH_RESPONDER_SELECTED_MESSAGE,
@@ -128,14 +128,14 @@ class MedicusService:
         replacements = HealthMeasurementCategoriser.process_measurements(data.measurements)
 
         for each_entry in replacements:
-            input = each_entry.to_dict() | {"ssn":str(data.patient_ssn)}
-            query = self._load_query_template("./queries/insert_sensor_measurement.rq",  input)
+            input = each_entry.to_dict() | {"ssn": str(data.patient_ssn)}
+            query = self._load_query_template("./queries/insert_sensor_measurement.rq", input)
             self._insert_query(query)
 
         replacements = {
-            "ssn" : str(data.patient_ssn),
+            "ssn": str(data.patient_ssn),
         }
-        query = self._load_query_template("./queries/query_medical_issue_to_person.rq",replacements)
+        query = self._load_query_template("./queries/query_medical_issue_to_person.rq", replacements)
         response = self._ask_query(query)
         is_emergency = len(response[0]['results']['bindings']) >= 1
 
@@ -154,17 +154,32 @@ class MedicusService:
             query = self._load_query_template("./queries/query_closest_responder.rq", replacements)
             response = self._ask_query(query)
 
-            people = []
+            contestans = []
             for each_entry in response[0]['results']['bindings']:
                 person_id = each_entry['person']['value'].split("#")[1]
                 street_id = each_entry['street']['value'].split("#")[1]
                 person_ssn = each_entry['ssn']['value']
-                people.append({"person_id": person_id, "street": street_id, "person_ssn": person_ssn})
 
-            can_decline:bool = False
-            selected_person = people[0]
+                replacements = {
+                    "edge_from": street_id,
+                    "edge_to": data.patient_edge
+                }
 
-            await self.notify_closest_responder(patient_ssn=data.patient_ssn, first_responder_ssn=int(selected_person["person_ssn"]), responder_can_decline=can_decline)
+                query = self._load_query_template("./queries/query_minum_distance_between_patient_and_prospect.rq",
+                                                  replacements)
+                response = self._ask_query(query)
+
+                distance = int(response['totalDistance']['value'])
+
+                contestans.append({"person_id": person_id, "person_ssn": person_ssn, "distance": distance})
+
+            can_decline: bool = False
+            contestans_sorted = sorted(contestans, key=lambda x: x['distance'])
+            selected_person = contestans_sorted[0]
+
+            await self.notify_closest_responder(patient_ssn=data.patient_ssn,
+                                                first_responder_ssn=int(selected_person["person_ssn"]),
+                                                responder_can_decline=can_decline)
         else:
             self.delete_patient_health_measurements(data.patient_ssn)
 
@@ -176,7 +191,7 @@ class MedicusService:
         elements_exist_in_database: bool = response[0]['boolean']
 
         if elements_exist_in_database:
-            return # stop duplication
+            return  # stop duplication
         else:
             for each_edge in graph.edges:
                 self._insert_graph_edges(each_edge)

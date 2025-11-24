@@ -8,7 +8,7 @@ from hidden.datastructures.datastructures import AddPersonRequest, AddNodeReques
 
 app = FastAPI()
 connections = []
-simulation = None   # will be set from main.py
+simulation = None   # will be set from mymain.py
 bus:EventBus = None   # will be set at runtime
 
 def set_bus(b):

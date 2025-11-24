@@ -1,0 +1,9 @@
+requests
+asyncio
+uvicorn
+broadcaster
+setuptools
+flask
+fastapi
+uuid
+simpy
