@@ -1,3 +1,10 @@
+Vorbereitung:
+Graphdb starten
+Repository muss "semtec" heißen
+und schema befüllen
+
+
+
 new_main.py starten
 
 Schauen ob die services laufen:

@@ -27,7 +27,7 @@ class GraphGenerator:
                 speciality=IllnessType.RESPIRATORY,
                 certificationLevel=CertificationLevel.ADVANCED,
                 medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
-                measurements=[HeartRateMeasurement(value=100)]
+                measurements=[GroundHardnessMeasurement(value=4)]
             ),
             Person(
                 target="e2",
@@ -35,7 +35,7 @@ class GraphGenerator:
                 name="Matija",
                 hasEmergency=False,
                 type="Patient",
-                speciality=IllnessType.RESPIRATORY,
+                speciality=IllnessType.TRAUMA,
                 certificationLevel=CertificationLevel.ADVANCED,
                 medicalHistory=None,
                 measurements=[HeartRateMeasurement(value=100)]

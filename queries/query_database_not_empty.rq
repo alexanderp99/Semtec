@@ -1,5 +1,4 @@
-PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
-
+prefix onto:<http://www.ontotext.com/>
 ASK {
-    ?s ?p ?o .
+    ?s a <https://omilab.org/experiments/city-swift-aid#StreetSegment> .
 }

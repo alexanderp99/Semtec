@@ -15,7 +15,7 @@ async def main():
     simpy = Simpy(broadcast, loop=loop)
     gui_server = GUIServer(simpy)
     simpy.gui_server = gui_server
-    medicus_service = MedicusService(broadcast,loop)
+    medicus_service = MedicusService(broadcast,loop=loop)
 
     await asyncio.gather(
         gui_server.start(),  # Port 8000

@@ -67,24 +67,15 @@ class MedicusService:
         query = self._load_query_template("./queries/delete_person_measurements.rq", replacement)
         self._insert_query(query)
 
-    def notify_closest_responder(self):
+    async def notify_closest_responder(self, patient_ssn, first_responder_ssn:int, responder_can_decline:bool):
 
-        query = self._load_query_template("./queries/query_closest_responder.rq")
-        #response = self._ask_query(query) TODO
-
-        first_responder_id = 0
-        responder_can_decline = True
-
-        asyncio.run_coroutine_threadsafe(
-            self.broadcast.publish(
-                Channel.HEALTH_RESPONDER_SELECTED_MESSAGE,
-                HealthResponderSelectedMessage(
-                    patient_ssn=first_responder_id,
-                    responder_ssn=first_responder_id,
-                    allowed_to_decline=responder_can_decline
-                )
-            ),
-            self.loop
+        await self.broadcast.publish(
+            Channel.HEALTH_RESPONDER_SELECTED_MESSAGE,
+            HealthResponderSelectedMessage(
+                patient_ssn=patient_ssn,
+                responder_ssn=first_responder_ssn,
+                allowed_to_decline=responder_can_decline
+            )
         )
 
     async def start(self):
@@ -111,9 +102,12 @@ class MedicusService:
     async def _listen_channel(self, channel, handler):
         async with self.broadcast.subscribe(channel=channel) as subscriber:
             async for event in subscriber:
-                handler(event.message)
+                if asyncio.iscoroutinefunction(handler):
+                    await handler(event.message)
+                else:
+                    handler(event.message)
 
-    def _handle_first_responder_response(self, message: EmergencyHelpResponse):
+    async def _handle_first_responder_response(self, message: EmergencyHelpResponse):
         if message.help_accepted:
             patient_ssn = message.patient_ssn
             self.delete_patient_health_measurements(patient_ssn)
@@ -124,9 +118,9 @@ class MedicusService:
             }
             query = self._load_query_template("./queries/insert_responder_declined.rq", replacements)
             self._insert_query(query)
-            self.notify_closest_responder()
+            await self.notify_closest_responder()
 
-    def _process_health_message(self, data: HealthMessage):
+    async def _process_health_message(self, data: HealthMessage):
 
         if self._emergency_already_exists():
             return
@@ -134,15 +128,43 @@ class MedicusService:
         replacements = HealthMeasurementCategoriser.process_measurements(data.measurements)
 
         for each_entry in replacements:
-            query = self._load_query_template("./queries/insert_sensor_measurement.rq", each_entry.to_dict())
+            input = each_entry.to_dict() | {"ssn":str(data.patient_ssn)}
+            query = self._load_query_template("./queries/insert_sensor_measurement.rq",  input)
             self._insert_query(query)
 
-        query = self._load_query_template("./queries/query_if_emergency.rq")
-        # response = self._ask_query(query) TODO
-        is_emergency = True
+        replacements = {
+            "ssn" : str(data.patient_ssn),
+        }
+        query = self._load_query_template("./queries/query_medical_issue_to_person.rq",replacements)
+        response = self._ask_query(query)
+        is_emergency = len(response[0]['results']['bindings']) >= 1
 
         if is_emergency:
-            self.notify_closest_responder()
+
+            illness = response[0]['results']['bindings'][0]['medicalIssue']['value'].split("#")[
+                1]  # 'https://omilab.org/experiments/city-swift-aid#SimpleFracture'
+            level: str = response[0]['results']['bindings'][0]['level']['value'].split("#")[1]
+            speciality: str = response[0]['results']['bindings'][0]['speciality']['value'].split("#")[1]
+
+            replacements = {
+                "level": level,
+                "speciality": speciality,
+                "ssn": str(data.patient_ssn)
+            }
+            query = self._load_query_template("./queries/query_closest_responder.rq", replacements)
+            response = self._ask_query(query)
+
+            people = []
+            for each_entry in response[0]['results']['bindings']:
+                person_id = each_entry['person']['value'].split("#")[1]
+                street_id = each_entry['street']['value'].split("#")[1]
+                person_ssn = each_entry['ssn']['value']
+                people.append({"person_id": person_id, "street": street_id, "person_ssn": person_ssn})
+
+            can_decline:bool = False
+            selected_person = people[0]
+
+            await self.notify_closest_responder(patient_ssn=data.patient_ssn, first_responder_ssn=int(selected_person["person_ssn"]), responder_can_decline=can_decline)
         else:
             self.delete_patient_health_measurements(data.patient_ssn)
 
@@ -202,6 +224,7 @@ class MedicusService:
             path = f"{self.GRAPHDB_BASE_URL}/repositories/{self.REPOSITORY_ID}"
             headers["Accept"] = "application/sparql-results+json"
         elif "sparql-update" in content_type:
+            headers["Accept"] = "*/*"
             path = f"{self.GRAPHDB_BASE_URL}/repositories/{self.REPOSITORY_ID}/statements"
 
         try:

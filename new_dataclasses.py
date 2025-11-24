@@ -27,13 +27,10 @@ class MeasurementCategory(Enum):
 
 
 class IllnessType(Enum):
-    CARDIAC = "cardiac"
-    INFLAMMATORY = "inflammatory"
-    RESPIRATORY = "respiratory"
-    MUSCULAR = "muscular"
-
-    def to_json(self):
-        return self.value
+    CARDIAC = "CardiacSpeciality"
+    TRAUMA = "TraumaSpeciality"
+    NEUROLOGICAL = "NeurologicalSpeciality"
+    RESPIRATORY = "RespiratorySpeciality"
 
 
 class CertificationLevel(Enum):

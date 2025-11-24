@@ -1,29 +1,18 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT ?person ?personName ?totalDistance
-WHERE {
-
-{patient}
- csa:locatedAt ?targetLocation .
-
-    ?person a csa:Person ;
-            csa:hasName ?personName ;
-            csa:locatedAt ?personLocation .
-    FILTER(?person != {patient})
-
-    ?targetLocation csa:connectedTo* ?personLocation .
-
-    # total distance
-    {
-        SELECT ?personLocation (SUM(?segmentLength) AS ?totalDistance)
-        WHERE {
-            ?targetLocation csa:connectedTo* ?midSegment .
-            ?midSegment csa:connectedTo* ?personLocation .
-            ?midSegment csa:hasLengthMeters ?segmentLength .
-        }
-        GROUP BY ?personLocation
+SELECT ?person ?street ?ssn WHERE {
+    ?person csa:locatedAt ?street .
+    ?person csa:hasSSN ?ssn .
+    ?person csa:holdsCertification [
+        a csa:Certification ;
+        csa:hasCertificationLevel ?level ;
+        csa:certificationSpecialty csa:{speciality}
+    ] .
+    ?level rdfs:subClassOf csa:{level} .
+    FILTER NOT EXISTS {
+        ?person csa:hasSSN "{ssn}"
     }
+
 }
-ORDER BY ASC(?totalDistance)
-LIMIT 5

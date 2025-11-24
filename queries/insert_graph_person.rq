@@ -6,5 +6,11 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         csa:{id} a csa:FirstResponder ;
             csa:hasSSN "{ssn}"^^xsd:string ;
             csa:hasName "{name}"^^xsd:string ;
-            csa:locatedAt csa:{target_location} .
+            csa:locatedAt csa:{target_location} ;
+            csa:holdsCertification [
+                a csa:Certification ;
+                csa:hasCertificationLevel csa:{certificationLevel} ;
+                csa:certificationSpecialty csa:{speciality}
+            ] .
+
     }

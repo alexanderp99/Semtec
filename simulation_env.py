@@ -32,7 +32,7 @@ class Simpy:
     def _handle_health_responder_selected(self, message: HealthResponderSelectedMessage):
 
         person_declines:bool = self.graph_data.get_person_by_ssn(message.responder_ssn).declines
-        if message.allowed_to_decline and person_declines:
+        if not self.simulation_running and (message.allowed_to_decline and person_declines):
             asyncio.run_coroutine_threadsafe(
                 self.broadcast.publish(channel=Channel.HEALTH_RESPONDER_RESPONSE, message=EmergencyHelpResponse(first_responder_ssn=message.responder_ssn,patient_ssn=message.responder_ssn,help_accepted=False)),
                 self.loop

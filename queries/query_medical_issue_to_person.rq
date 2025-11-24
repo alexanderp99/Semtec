@@ -1,0 +1,22 @@
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+SELECT DISTINCT ?personName ?medicalIssue ?level ?speciality
+WHERE {
+  ?person csa:hasSSN "{ssn}" .
+  ?person csa:hasName ?personName .
+
+  ?medicalIssue a csa:MedicalIssue ;
+                csa:hasTreatmentLevel ?treatmentLevel .
+  ?treatmentLevel csa:requiresCertificationLevel ?level .
+  ?medicalIssue csa:medicalIssueSpecialty ?speciality .
+
+  FILTER NOT EXISTS {
+    ?treatmentLevel csa:hasMeasurementValuePair ?reqPair .
+
+    FILTER NOT EXISTS {
+      ?person csa:hasHealthMeasurement ?personPair .
+
+      ?personPair csa:matchesMedicalIssueMeasurementPair ?reqPair .
+
+    }
+  }
+}
