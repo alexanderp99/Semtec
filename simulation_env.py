@@ -38,7 +38,7 @@ class Simpy:
                 self.loop
             )
         else:
-            self.simulation_running = False
+            self.stop()
 
     def run_simulation(self):
         self.env.process(self.simulation_loop())
@@ -62,16 +62,16 @@ class Simpy:
     def simulation_loop(self):
         while True:
             if self.simulation_running:
-                yield self.env.timeout(9000)
+                yield self.env.timeout(15000)
 
                 for eachPerson in self.graph_data.people:
                     self.env.process(self.send_person_message(eachPerson))
 
             else:
-                yield self.env.timeout(6000)
+                yield self.env.timeout(20000)
 
     def send_person_message(self, person:Person):
-        delay = 1000
+        delay = 5000
         yield self.env.timeout(delay)
 
         message:HealthMessage = HealthMessage(
