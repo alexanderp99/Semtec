@@ -4,6 +4,7 @@ from gui_server import GUIServer
 from simulation_env import Simpy
 from broadcaster import Broadcast
 import logging
+from scenarios import SimpleScenario
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -12,7 +13,7 @@ async def main():
 
     loop = asyncio.get_event_loop()
 
-    simpy = Simpy(broadcast, loop=loop)
+    simpy = Simpy(broadcast, loop=loop, graphdata=SimpleScenario.get_graph())
     gui_server = GUIServer(simpy)
     simpy.gui_server = gui_server
     medicus_service = MedicusService(broadcast,loop=loop)

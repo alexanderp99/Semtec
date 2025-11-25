@@ -1,0 +1,11 @@
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+ASK  {
+    ?emergency a csa:Emergency .
+    ?emergency csa:requiresTreatmentLevel ?treatmentLevel.
+    ?treatmentLevel csa:hasMeasurementValuePair ?pair .
+    ?pair csa:hasMeasurement ?measurement .
+    ?pair csa:hasValue ?value
+    
+}

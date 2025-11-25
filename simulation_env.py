@@ -9,14 +9,14 @@ from threading import Lock
 
 
 class Simpy:
-    def __init__(self, broadcast: Broadcast, loop):
+    def __init__(self, broadcast: Broadcast, loop, graphdata: GraphData):
         self.broadcast = broadcast
         self.loop = loop
         self.env = simpy.Environment()
         self._simulation_running: bool = False
         self._simulation_lock = Lock()
         self.simulation_thread = None
-        self.graph_data: GraphData = GraphGenerator.generate_graph_data()
+        self.graph_data: GraphData = graphdata
 
     @property
     def simulation_running(self):
@@ -51,14 +51,23 @@ class Simpy:
                 self.loop
             )
         else:
+            asyncio.run_coroutine_threadsafe(
+                self.broadcast.publish(channel=Channel.HEALTH_RESPONDER_RESPONSE,
+                                       message=EmergencyHelpResponse(first_responder_ssn=message.responder_ssn,
+                                                                     patient_ssn=message.responder_ssn,
+                                                                     help_accepted=True)),
+                self.loop
+            )
             self.stop()
 
     def run_simulation(self):
         self.env.process(self.simulation_loop())
+
         while True:
             try:
                 self.env.step()
             except Exception:
+                self.simulation_running = False
                 break
 
     def start_simulation(self):
@@ -83,9 +92,10 @@ class Simpy:
             else:
                 yield self.env.timeout(20000)
 
+
+
     def send_person_message(self, person:Person):
-        delay = 5000
-        yield self.env.timeout(delay)
+        yield self.env.timeout(500)
 
         message:HealthMessage = HealthMessage(
                 patient_ssn=person.ssn,

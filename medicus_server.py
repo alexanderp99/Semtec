@@ -58,7 +58,11 @@ class MedicusService:
             return {"service": "Medicus", "status": "running"}
 
     def _emergency_already_exists(self):
-        return False
+
+        query = self._load_query_template("./queries/query_if_emergency_exists.rq")
+        response = self._ask_query(query)
+        emergency_already_exists = response[0]['boolean']
+        return emergency_already_exists
 
     def delete_patient_health_measurements(self, patient_ssn):
         replacement = {
@@ -140,11 +144,15 @@ class MedicusService:
         is_emergency = len(response[0]['results']['bindings']) >= 1
 
         if is_emergency:
-
-            illness = response[0]['results']['bindings'][0]['medicalIssue']['value'].split("#")[
-                1]  # 'https://omilab.org/experiments/city-swift-aid#SimpleFracture'
+            value = response[0]['results']['bindings'][0]['value']['value'].split("#")[1]
+            measurement = response[0]['results']['bindings'][0]['measurment']['value'].split("#")[1]
+            #treatment_level = response[0]['results']['bindings'][0]['treatmentLevel']['value']
             level: str = response[0]['results']['bindings'][0]['level']['value'].split("#")[1]
             speciality: str = response[0]['results']['bindings'][0]['speciality']['value'].split("#")[1]
+
+            replacements = {"patient_ssn" : str(data.patient_ssn), "measurement":measurement, "value":value, "level":level, "speciality":speciality}
+            query = self._load_query_template("./queries/insert_emergency.rq", replacements)
+            self._insert_query(query)
 
             replacements = {
                 "level": level,
@@ -169,7 +177,7 @@ class MedicusService:
                                                   replacements)
                 response = self._ask_query(query)
 
-                distance = int(response['totalDistance']['value'])
+                distance = int(response[0]['results']['bindings'][0]['totalDistance']['value'])
 
                 contestans.append({"person_id": person_id, "person_ssn": person_ssn, "distance": distance})
 

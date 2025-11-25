@@ -1,0 +1,8 @@
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?person ?measurement ?value WHERE {
+    ?person csa:hasHealthMeasurement ?mvaluePair .
+    ?mvaluePair csa:hasMeasurement ?measurement .
+    ?mvaluePair csa:hasValue ?value
+}

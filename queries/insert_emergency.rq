@@ -1,11 +1,24 @@
 PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-INSERT DATA {
-  csa:{ssn} a csa:Emergency ;
-      csa:happensOn csa:{patient_id} ;
-      csa:hasEmergencyType csa:{emergency_type} ;
+INSERT {
+  ?emergency_id a csa:Emergency ;
+      csa:associatedWithSSN "{patient_ssn}" ;
+      csa:requiresTreatmentLevel [
+          a csa:TreatmentLevel ;
+          csa:requiresCertificationLevel csa:{level} ;
+          csa:hasMeasurementValuePair [
+              a csa:MeasurementValuePair ;
+              csa:hasMeasurement csa:{measurement} ;
+              csa:hasValue csa:{value}
+          ]
+      ] ;
       csa:hasStatus [
           a csa:ReportedStatus ;
-          csa:statusTimestamp "{current_time}"^^xsd:dateTime
-      ] }
+          csa:statusTimestamp ?current_time
+      ] .
+}
+WHERE {
+  BIND(UUID() AS ?emergency_id)
+  BIND(NOW() AS ?current_time)
+}
