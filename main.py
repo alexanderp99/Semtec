@@ -3,11 +3,13 @@ from application_components.medicus.medicus_server import MedicusService
 from application_components.GUI.gui_server import GUIServer
 from application_components.simulation_environment.simulation_env import Simpy
 from broadcaster import Broadcast
-from scenarios import SimpleScenario
+from scenarios import SimpleScenario, SimpleScenario2
 import logging
 
 logging.basicConfig(level=logging.INFO,handlers=[logging.FileHandler('scenario.log',encoding='utf-8'),logging.StreamHandler()],format='%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(funcName)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S')
+
+all_scenarios = [SimpleScenario.get_graph(), SimpleScenario2.get_graph()]
 
 async def main():
     broadcast = Broadcast("memory://")

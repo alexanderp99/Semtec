@@ -126,7 +126,7 @@ class MedicusService:
     async def _handle_first_responder_response(self, message: EmergencyHelpResponse):
         if message.help_accepted:
             patient_ssn = message.patient_ssn
-            logger.info(f"Selected first responder with ssn {str(message.first_responder_ssn)}")
+            logger.info(f"Confirmed Selection of first responder with ssn {str(message.first_responder_ssn)}")
             self.delete_patient_health_measurements(patient_ssn)
         else:
             replacements = {

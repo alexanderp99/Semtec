@@ -8,13 +8,13 @@ import logging
 import simpy.rt
 logger = logging.getLogger(__name__)
 
-REAL_TIME_FACTOR = 0.001
+REAL_TIME_FACTOR = 1
 
 class Simpy:
     def __init__(self, broadcast: Broadcast, loop, graphdata: GraphData):
         self.broadcast = broadcast
         self.loop = loop
-        self.env = simpy.Environment()
+        self.env = simpy.rt.RealtimeEnvironment(factor=REAL_TIME_FACTOR,strict=False)
         self._simulation_running: bool = False
         self._simulation_lock = Lock()
         self.simulation_thread = None
@@ -60,7 +60,8 @@ class Simpy:
                                                                      help_accepted=True)),
                 self.loop
             )
-            self.stop()
+        self.stop()
+
 
     def run_simulation(self):
         self.env.process(self.simulation_loop())
@@ -87,10 +88,10 @@ class Simpy:
         while True:
             if self.simulation_running:
                 for eachPerson in self.graph_data.people:
-                    yield self.env.timeout(100)
+                    yield self.env.timeout(1)
                     self.env.process(self.send_person_message(eachPerson))
 
-                yield self.env.timeout(1500)
+                yield self.env.timeout(15)
 
 
     def send_person_message(self, person:Person):
