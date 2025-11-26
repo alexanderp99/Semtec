@@ -1,0 +1,22 @@
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+DELETE WHERE {
+  ?emergency a csa:Emergency .
+  ?emergency ?p ?o .
+};
+
+DELETE WHERE {
+  ?person a csa:Person .
+  ?person ?p ?o .
+};
+
+DELETE WHERE {
+  ?street a csa:StreetSegment .
+  ?street ?p ?o .
+};
+
+DELETE WHERE {
+  ?history a csa:MedicalHistoryEntry .
+  ?history ?p ?o .
+};

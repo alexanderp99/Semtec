@@ -4,8 +4,9 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 
-from CytoscapeConverter import CytoscapeConverter
-
+from .CytoscapeConverter import CytoscapeConverter
+import logging
+logger = logging.getLogger(__name__)
 
 class GUIServer:
     def __init__(self, simpy):

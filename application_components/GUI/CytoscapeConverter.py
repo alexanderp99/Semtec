@@ -1,7 +1,4 @@
-import json
-from dataclasses import dataclass, field, asdict
-from typing import List, Dict, Any, Optional
-from new_dataclasses import *
+from application_components.dataclasses import *
 
 class CytoscapeConverter:
     @staticmethod

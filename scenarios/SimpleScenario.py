@@ -1,4 +1,4 @@
-from new_dataclasses import *
+from application_components.dataclasses import *
 
 def get_graph():
     edges = [

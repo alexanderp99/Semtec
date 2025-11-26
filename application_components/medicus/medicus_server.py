@@ -6,9 +6,15 @@ import uvicorn
 from broadcaster import Broadcast
 from fastapi import FastAPI
 from flask import jsonify
+import os
+from pathlib import Path
 
-from HealthMeasurementCategoriser import HealthMeasurementCategoriser
-from new_dataclasses import *
+
+from .HealthMeasurementCategoriser import HealthMeasurementCategoriser
+from application_components.dataclasses import *
+import logging
+logger = logging.getLogger(__name__)
+current_file = Path(__file__).resolve()
 
 
 class MedicusService:
@@ -59,19 +65,25 @@ class MedicusService:
 
     def _emergency_already_exists(self):
 
-        query = self._load_query_template("./queries/query_if_emergency_exists.rq")
-        response = self._ask_query(query)
-        emergency_already_exists = response[0]['boolean']
+        query = self._load_query_template("graphdb_queries/query_if_emergency_exists.rq")
+        response, status_code = self._ask_query(query)
+        emergency_already_exists = response['boolean']
         return emergency_already_exists
 
     def delete_patient_health_measurements(self, patient_ssn):
         replacement = {
             "ssn": str(patient_ssn)
         }
-        query = self._load_query_template("./queries/delete_person_measurements.rq", replacement)
-        self._insert_query(query)
+        query = self._load_query_template("graphdb_queries/delete_person_measurements.rq", replacement)
+        result, status_code = self._insert_query(query)
+        if status_code == 200 or status_code == 204:
+            logging.info(f"Successfully deleted health measurements of patient with ssn {patient_ssn}")
+        else:
+            logging.error(f"Error deleting health measurements: {status_code}, {result}")
 
     async def notify_closest_responder(self, patient_ssn, first_responder_ssn: int, responder_can_decline: bool):
+
+        logging.info(f"First responder with ssn: {str(first_responder_ssn)} was chosen to help for patient ssn: {patient_ssn} and can delince: {responder_can_decline}")
 
         await self.broadcast.publish(
             Channel.HEALTH_RESPONDER_SELECTED_MESSAGE,
@@ -114,56 +126,81 @@ class MedicusService:
     async def _handle_first_responder_response(self, message: EmergencyHelpResponse):
         if message.help_accepted:
             patient_ssn = message.patient_ssn
+            logger.info(f"Selected first responder with ssn {str(message.first_responder_ssn)}")
             self.delete_patient_health_measurements(patient_ssn)
         else:
             replacements = {
-                "ssn": message.patient_ssn,
+                "ssn": str(message.patient_ssn),
                 "emergency_id": "?"
             }
-            query = self._load_query_template("./queries/insert_responder_declined.rq", replacements)
-            self._insert_query(query)
+            query = self._load_query_template("graphdb_queries/insert_responder_declined.rq", replacements)
+            result, status_code = self._insert_query(query)
+            if status_code == 200 or status_code == 204:
+                logging.info(f"Successfully inserted, that potential first responder with ssn {str(message.first_responder_ssn)}, declined")
+            else:
+                logging.error(f"Unsuccessfully tried inserting, that potential first responder with ssn {str(message.first_responder_ssn)}, declined ")
             await self.notify_closest_responder()
 
     async def _process_health_message(self, data: HealthMessage):
 
         if self._emergency_already_exists():
+            logging.info(f"Rejected processing health message, since an emergency already exists. Health message: {data}")
             return
 
-        replacements = HealthMeasurementCategoriser.process_measurements(data.measurements)
+        replacements: List[HealthMeasurementValuePair] = HealthMeasurementCategoriser.process_measurements(data.measurements)
+        logging.info(f"Health message: {data} was transformed into {replacements}")
 
         for each_entry in replacements:
             input = each_entry.to_dict() | {"ssn": str(data.patient_ssn)}
-            query = self._load_query_template("./queries/insert_sensor_measurement.rq", input)
-            self._insert_query(query)
+            query = self._load_query_template("graphdb_queries/insert_sensor_measurement.rq", input)
+            result, status_code = self._insert_query(query)
+            if status_code == 200 or status_code == 204:
+                logging.info(f"Health message: {input} was successfully transformed into {replacements}")
+            else:
+                logging.error(f"Error inserting sensor measurement of person: {status_code} - {result}. Person ssn: {data.patient_ssn}. Measurement: {each_entry}")
 
         replacements = {
             "ssn": str(data.patient_ssn),
         }
-        query = self._load_query_template("./queries/query_medical_issue_to_person.rq", replacements)
-        response = self._ask_query(query)
-        is_emergency = len(response[0]['results']['bindings']) >= 1
+        query = self._load_query_template("graphdb_queries/query_medical_issue_to_person.rq", replacements)
+        response, status_code = self._ask_query(query)
+        is_emergency = len(response['results']['bindings']) >= 1
+
+        if status_code == 200:
+            logging.info(f"Person {data.patient_ssn} {'HAS' if is_emergency else 'has NOT'} an emergency.")
+        else:
+            logging.error(f"Error querying medical issue: {response}")
+
 
         if is_emergency:
-            value = response[0]['results']['bindings'][0]['value']['value'].split("#")[1]
-            measurement = response[0]['results']['bindings'][0]['measurment']['value'].split("#")[1]
-            #treatment_level = response[0]['results']['bindings'][0]['treatmentLevel']['value']
-            level: str = response[0]['results']['bindings'][0]['level']['value'].split("#")[1]
-            speciality: str = response[0]['results']['bindings'][0]['speciality']['value'].split("#")[1]
+            value = response['results']['bindings'][0]['value']['value'].split("#")[1]
+            measurement = response['results']['bindings'][0]['measurment']['value'].split("#")[1]
+            #treatment_level = response['results']['bindings'][0]['treatmentLevel']['value']
+            level: str = response['results']['bindings'][0]['level']['value'].split("#")[1]
+            speciality: str = response['results']['bindings'][0]['speciality']['value'].split("#")[1]
 
             replacements = {"patient_ssn" : str(data.patient_ssn), "measurement":measurement, "value":value, "level":level, "speciality":speciality}
-            query = self._load_query_template("./queries/insert_emergency.rq", replacements)
-            self._insert_query(query)
+            query = self._load_query_template("graphdb_queries/insert_emergency.rq", replacements)
+            result, status_code = self._insert_query(query)
+            if status_code == 200 or status_code == 204:
+                logging.info(f"Successfully inserted emergency: {replacements}")
+            else:
+                logging.error(f"Error inserting emergency {replacements} with result: {result}")
 
             replacements = {
                 "level": level,
                 "speciality": speciality,
                 "ssn": str(data.patient_ssn)
             }
-            query = self._load_query_template("./queries/query_closest_responder.rq", replacements)
-            response = self._ask_query(query)
+            query = self._load_query_template("graphdb_queries/query_qualified_responders.rq", replacements)
+            response, status_code = self._ask_query(query)
+            if status_code == 200:
+                logging.info(f"Successfully found qualified responders: {response['results']['bindings']}")
+            else:
+                logging.error(f"Error query closest responder to patient {data.patient_ssn} with result: {response}")
 
             contestans = []
-            for each_entry in response[0]['results']['bindings']:
+            for each_entry in response['results']['bindings']:
                 person_id = each_entry['person']['value'].split("#")[1]
                 street_id = each_entry['street']['value'].split("#")[1]
                 person_ssn = each_entry['ssn']['value']
@@ -173,11 +210,16 @@ class MedicusService:
                     "edge_to": data.patient_edge
                 }
 
-                query = self._load_query_template("./queries/query_minum_distance_between_patient_and_prospect.rq",
-                                                  replacements)
-                response = self._ask_query(query)
+                query = self._load_query_template(
+                    "graphdb_queries/query_minum_distance_between_patient_and_prospect.rq",
+                    replacements)
+                response, status_code = self._ask_query(query)
+                if status_code == 200:
+                    logging.info("Successfully found minimal path between (ssn {data.patient_ssn}) and (ssn {person_ssn})")
+                else:
+                    logging.error(f"Error querying minum-distance between patient (ssn {data.patient_ssn} and prospect (ssn {person_ssn}) with result: {response}")
 
-                distance = int(response[0]['results']['bindings'][0]['totalDistance']['value'])
+                distance = int(response['results']['bindings'][0]['totalDistance']['value'])
 
                 contestans.append({"person_id": person_id, "person_ssn": person_ssn, "distance": distance})
 
@@ -193,34 +235,44 @@ class MedicusService:
 
     def _add_graph_to_vectordatabase(self, graph: GraphData):
 
-        query = self._load_query_template("./queries/query_database_not_empty.rq")
-        response = self._ask_query(query)
+        query = self._load_query_template("graphdb_queries/query_database_not_empty.rq")
+        response, status_code = self._ask_query(query)
 
-        elements_exist_in_database: bool = response[0]['boolean']
+        elements_exist_in_database: bool = response['boolean']
 
         if elements_exist_in_database:
-            return  # stop duplication
+            logging.info(f"Rejected adding graph to vectordatabase, since it already has elements. Rejected graph: {graph} ")
+            return
         else:
             for each_edge in graph.edges:
-                self._insert_graph_edges(each_edge)
+                self._insert_graph_edge(each_edge)
 
             for each_person in graph.people:
                 self._insert_graph_person(each_person)
 
-    def _insert_graph_edges(self, each_edge):
+    def _insert_graph_edge(self, each_edge:Edge ):
 
         replacements = each_edge.to_dict()
-        query = self._load_query_template("./queries/insert_graph_edge.rq", replacements)
-        self._insert_query(query)
+        query = self._load_query_template("graphdb_queries/insert_graph_edge.rq", replacements)
+        result, status_code = self._insert_query(query)
+        if status_code == 200 or status_code == 204:
+            logging.info(f"Succesfully inserted graph edge: {each_edge}")
+        else:
+            logging.error(f"Failed to insert graph edge: {each_edge}")
 
-    def _insert_graph_person(self, each_person):
+    def _insert_graph_person(self, each_person: Person):
         replacements = each_person.to_dict()
         replacements["id"] = str(uuid.uuid4())
-        query = self._load_query_template("./queries/insert_graph_person.rq", replacements)
-        self._insert_query(query)
+        query = self._load_query_template("graphdb_queries/insert_graph_person.rq", replacements)
+        result, status_code = self._insert_query(query)
+        if status_code == 200 or status_code == 204:
+            logging.info(f"Succesfully inserted graph person: {each_person}")
+        else:
+            logging.error(f"Failed to insert graph person: {each_person}")
 
     def _load_query_template(self, template_path, replacements=None):
-        with open(template_path, 'r') as file:
+        query_path = current_file.parent / template_path
+        with open(query_path, 'r') as file:
             template = file.read()
 
         if replacements:

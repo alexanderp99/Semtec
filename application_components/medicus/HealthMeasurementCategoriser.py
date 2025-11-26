@@ -1,6 +1,7 @@
-from typing import List, Dict, Any, Union
-from dataclasses import dataclass
-from new_dataclasses import *
+from application_components.dataclasses import *
+import logging
+logger = logging.getLogger(__name__)
+
 
 class HealthMeasurementCategoriser:
     @staticmethod
