@@ -18,10 +18,10 @@ def get_graph():
             name="Alex",
             hasEmergency=False,
             type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
+            speciality=IllnessType.TRAUMA,
             certificationLevel=CertificationLevel.ADVANCED,
             medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
-            measurements=[GroundHardnessMeasurement(value=4)]
+            measurements=[HeartRateMeasurement(value=100)]
         ),
         Person(
             target="e2",
@@ -29,10 +29,10 @@ def get_graph():
             name="Matija",
             hasEmergency=False,
             type="FirstResponder",
-            speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.INTERMEDIATE,
+            speciality=IllnessType.RESPIRATORY,
+            certificationLevel=CertificationLevel.BASIC,
             medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
+            measurements=[GroundHardnessMeasurement(value=4)]
         ),
         Person(
             target="e3",
@@ -40,9 +40,10 @@ def get_graph():
             name="Rohit",
             hasEmergency=False,
             type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
+            speciality=IllnessType.TRAUMA,
             certificationLevel=CertificationLevel.ADVANCED,
             medicalHistory=None,
+            declines_request=True,
             measurements=[HeartRateMeasurement(value=100)]
         ),
         Person(

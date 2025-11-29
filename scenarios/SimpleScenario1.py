@@ -30,7 +30,7 @@ def get_graph():
             hasEmergency=False,
             type="FirstResponder",
             speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.INTERMEDIATE,
+            certificationLevel=CertificationLevel.BASIC,
             medicalHistory=None,
             measurements=[HeartRateMeasurement(value=100)]
         ),

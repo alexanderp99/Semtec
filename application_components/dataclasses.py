@@ -381,7 +381,7 @@ class Person:
     medicalHistory: Optional[List[MedicalHistory]] = None
     detectsEmergency: Optional[str] = None
     measurements: Optional[List[HealthMeasurement]] = None
-    declines: bool = False
+    declines_request: bool = False
 
     def to_dict(self):
         return {
@@ -401,7 +401,6 @@ class Person:
 
     def __repr__(self):
         return f"Person(ssn={self.ssn}, name='{self.name}', type='{self.type}', speciality={self.speciality}, target='{self.target}', hasEmergency={self.hasEmergency}, certificationLevel={self.certificationLevel})"
-
 
 @dataclass
 class EmergencyHelpResponse:
@@ -463,7 +462,6 @@ class FirstResponderSelectedMessage:
 class GraphData:
     edges: List[Edge]
     people: List[Person]
-    emergencies: List[Emergency]
 
     def get_person_by_ssn(self, ssn: int) -> Person:
         for person in self.people:
@@ -471,7 +469,23 @@ class GraphData:
                 return person
 
     def __str__(self):
-        return f"GraphData(edges={len(self.edges)}, people={len(self.people)}, emergencies={len(self.emergencies)})"
+        return f"GraphData(edges={len(self.edges)}, people={len(self.people)})"
 
     def __repr__(self):
-        return f"GraphData(edges={self.edges}, people={self.people}, emergencies={self.emergencies})"
+        return f"GraphData(edges={self.edges}, people={self.people}"
+
+@dataclass
+class Scenario:
+    name: str
+    description: str
+    graph: GraphData
+
+@dataclass
+class Scenarios:
+    scenarios: List[Scenario]
+
+    def get_scenario_by_name(self, name: str) -> Scenario:
+        for scenario in self.scenarios:
+            if scenario.name == name:
+                return scenario
+        raise Exception(f"Scenario with name {name} not found")

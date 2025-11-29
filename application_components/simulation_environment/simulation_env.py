@@ -8,34 +8,24 @@ import logging
 import simpy.rt
 logger = logging.getLogger(__name__)
 
-REAL_TIME_FACTOR = 1
+REAL_TIME_FACTOR = 0.1
 
 class Simpy:
     def __init__(self, broadcast: Broadcast, loop, graphdata: GraphData):
         self.broadcast = broadcast
         self.loop = loop
-        self.env = simpy.rt.RealtimeEnvironment(factor=REAL_TIME_FACTOR,strict=False)
-        self._simulation_running: bool = False
+        self.env = simpy.rt.RealtimeEnvironment(factor=REAL_TIME_FACTOR, strict=
+                                                False)
+        self.simulation_stopped_event = self.env.event()
         self._simulation_lock = Lock()
         self.simulation_thread = None
         self.graph_data: GraphData = graphdata
-
-    @property
-    def simulation_running(self):
-        with self._simulation_lock:
-            return self._simulation_running
-
-    @simulation_running.setter
-    def simulation_running(self, value: bool):
-        with self._simulation_lock:
-            self._simulation_running = value
+        self.number_of_people = len(self.graph_data.people)
+        self.number_data_iterations = 3
 
     async def start(self):
         await self.broadcast.connect()
         asyncio.create_task(self.listen_to_bus_messages())
-        self.simulation_thread = threading.Thread(target=self.run_simulation)
-        self.simulation_thread.daemon = True
-        self.simulation_thread.start()
 
     async def listen_to_bus_messages(self):
         async with self.broadcast.subscribe(channel=Channel.HEALTH_RESPONDER_SELECTED_MESSAGE) as subscriber:
@@ -46,17 +36,17 @@ class Simpy:
 
     def _handle_health_responder_selected(self, message: HealthResponderSelectedMessage):
 
-        person_declines:bool = self.graph_data.get_person_by_ssn(message.responder_ssn).declines
+        person_declines:bool = self.graph_data.get_person_by_ssn(message.responder_ssn).declines_request
         if message.allowed_to_decline and person_declines:
             asyncio.run_coroutine_threadsafe(
-                self.broadcast.publish(channel=Channel.HEALTH_RESPONDER_RESPONSE, message=EmergencyHelpResponse(first_responder_ssn=message.responder_ssn,patient_ssn=message.responder_ssn,help_accepted=False)),
+                self.broadcast.publish(channel=Channel.HEALTH_RESPONDER_RESPONSE, message=EmergencyHelpResponse(first_responder_ssn=message.responder_ssn,patient_ssn=message.patient_ssn,help_accepted=False)),
                 self.loop
             )
         else:
             asyncio.run_coroutine_threadsafe(
                 self.broadcast.publish(channel=Channel.HEALTH_RESPONDER_RESPONSE,
                                        message=EmergencyHelpResponse(first_responder_ssn=message.responder_ssn,
-                                                                     patient_ssn=message.responder_ssn,
+                                                                     patient_ssn=message.patient_ssn,
                                                                      help_accepted=True)),
                 self.loop
             )
@@ -66,32 +56,44 @@ class Simpy:
     def run_simulation(self):
         self.env.process(self.simulation_loop())
 
-        while True:
-            try:
-                self.env.step()
-            except Exception:
-                self.simulation_running = False
-                break
+        try:
+            self.env.run(until=self.simulation_stopped_event)
+        except Exception as e:
+            logger.error("Exception occurred while running simulation ")
+
+    def monitor_simulation_state(self):
+        yield self.env.timeout(1/REAL_TIME_FACTOR * self.number_of_people * self.number_data_iterations)
+        logging.warning(f"Stopping Simpy due to time timeout!")
+        self.simulation_stopped_event.succeed()
+
 
     def start_simulation(self):
         asyncio.run_coroutine_threadsafe(
             self.broadcast.publish(channel=Channel.INIT, message=self.graph_data),
             self.loop
         )
-        self.simulation_running = True
+        self.env.process(self.monitor_simulation_state())
+
+        self.simulation_thread = threading.Thread(target=self.run_simulation)
+        self.simulation_thread.daemon = True
+        self.simulation_thread.start()
 
     def stop(self):
-        self.simulation_running = False
+        self.simulation_stopped_event.succeed()
 
 
     def simulation_loop(self):
-        while True:
-            if self.simulation_running:
-                for eachPerson in self.graph_data.people:
-                    yield self.env.timeout(1)
-                    self.env.process(self.send_person_message(eachPerson))
 
-                yield self.env.timeout(15)
+        iteration_round: int = 0
+
+        while True:
+            logger.info(f"Simpy simulation round: {str(iteration_round)}")
+
+            for eachPerson in self.graph_data.people:
+                yield self.env.timeout(20)
+                self.send_person_message(eachPerson)
+
+            iteration_round += 1
 
 
     def send_person_message(self, person:Person):
