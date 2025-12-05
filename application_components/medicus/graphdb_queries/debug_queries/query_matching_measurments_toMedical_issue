@@ -1,0 +1,10 @@
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+SELECT ?personPair ?reqPair ?treatLvl ?measurement ?value ?issue WHERE {
+  ?personPair csa:matchesMedicalIssueMeasurementPair ?reqPair .
+    ?personPair csa:hasMeasurement ?measurement .
+    ?personPair csa:hasValue ?value .
+
+    ?issue csa:hasTreatmentLevel ?treatLvl .
+      ?treatLvl csa:hasMeasurementValuePair ?reqPair
+
+}
