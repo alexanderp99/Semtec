@@ -9,10 +9,10 @@ from flask import jsonify
 import os
 from pathlib import Path
 
-
 from .HealthMeasurementCategoriser import HealthMeasurementCategoriser
 from application_components.dataclasses import *
 import logging
+
 logger = logging.getLogger(__name__)
 current_file = Path(__file__).resolve()
 
@@ -83,7 +83,8 @@ class MedicusService:
 
     async def notify_closest_responder(self, patient_ssn, first_responder_ssn: int, responder_can_decline: bool):
 
-        logging.info(f"First responder with ssn: {str(first_responder_ssn)} was chosen to help for patient ssn: {patient_ssn} and can delince: {responder_can_decline}")
+        logging.info(
+            f"First responder with ssn: {str(first_responder_ssn)} was chosen to help for patient ssn: {patient_ssn} and can delince: {responder_can_decline}")
 
         await self.broadcast.publish(
             Channel.HEALTH_RESPONDER_SELECTED_MESSAGE,
@@ -135,18 +136,22 @@ class MedicusService:
             query = self._load_query_template("graphdb_queries/insert_responder_declined.rq", replacements)
             result, status_code = self._insert_query(query)
             if status_code == 200 or status_code == 204:
-                logging.info(f"Successfully inserted, that potential first responder with ssn {str(message.first_responder_ssn)}, declined")
+                logging.info(
+                    f"Successfully inserted, that potential first responder with ssn {str(message.first_responder_ssn)}, declined")
             else:
-                logging.error(f"Unsuccessfully tried inserting, that potential first responder with ssn {str(message.first_responder_ssn)}, declined ")
+                logging.error(
+                    f"Unsuccessfully tried inserting, that potential first responder with ssn {str(message.first_responder_ssn)}, declined ")
             await self.notify_closest_responder()
 
     async def _process_health_message(self, data: HealthMessage):
 
         if self._emergency_already_exists():
-            logging.info(f"Rejected processing health message, since an emergency already exists. Health message: {data}")
+            logging.info(
+                f"Rejected processing health message, since an emergency already exists. Health message: {data}")
             return
 
-        replacements: List[HealthMeasurementValuePair] = HealthMeasurementCategoriser.process_measurements(data.measurements)
+        replacements: List[HealthMeasurementValuePair] = HealthMeasurementCategoriser.process_measurements(
+            data.measurements)
         logging.info(f"Health message: {data} was transformed into {replacements}")
 
         for each_entry in replacements:
@@ -154,9 +159,11 @@ class MedicusService:
             query = self._load_query_template("graphdb_queries/insert_sensor_measurement.rq", input)
             result, status_code = self._insert_query(query)
             if status_code == 200 or status_code == 204:
-                logging.info(f"Health message: {input} was successfully inserted as query {query.replace("\n","")}")
+                query_line = query.replace('\n', "")
+                logging.info(f"Health message: {input} was successfully inserted as query {query_line}")
             else:
-                logging.error(f"Error inserting sensor measurement of person: {status_code} - {result}. Person ssn: {data.patient_ssn}. Measurement: {each_entry}")
+                logging.error(
+                    f"Error inserting sensor measurement of person: {status_code} - {result}. Person ssn: {data.patient_ssn}. Measurement: {each_entry}")
 
         replacements = {
             "ssn": str(data.patient_ssn),
@@ -170,15 +177,15 @@ class MedicusService:
         else:
             logging.error(f"Error querying medical issue: {response}")
 
-
         if is_emergency:
             value = response['results']['bindings'][0]['value']['value'].split("#")[1]
             measurement = response['results']['bindings'][0]['measurement']['value'].split("#")[1]
-            #treatment_level = response['results']['bindings'][0]['treatmentLevel']['value']
+            # treatment_level = response['results']['bindings'][0]['treatmentLevel']['value']
             level: str = response['results']['bindings'][0]['level']['value'].split("#")[1]
             speciality: str = response['results']['bindings'][0]['speciality']['value'].split("#")[1]
 
-            replacements = {"patient_ssn" : str(data.patient_ssn), "measurement":measurement, "value":value, "level":level, "speciality":speciality}
+            replacements = {"patient_ssn": str(data.patient_ssn), "measurement": measurement, "value": value,
+                            "level": level, "speciality": speciality}
             query = self._load_query_template("graphdb_queries/insert_emergency.rq", replacements)
             result, status_code = self._insert_query(query)
             if status_code == 200 or status_code == 204:
@@ -216,9 +223,11 @@ class MedicusService:
                     replacements)
                 response, status_code = self._ask_query(query)
                 if status_code == 200:
-                    logging.info("Successfully found minimal path between (ssn {data.patient_ssn}) and (ssn {person_ssn})")
+                    logging.info(
+                        "Successfully found minimal path between (ssn {data.patient_ssn}) and (ssn {person_ssn})")
                 else:
-                    logging.error(f"Error querying minum-distance between patient (ssn {data.patient_ssn} and prospect (ssn {person_ssn}) with result: {response}")
+                    logging.error(
+                        f"Error querying minum-distance between patient (ssn {data.patient_ssn} and prospect (ssn {person_ssn}) with result: {response}")
 
                 distance = int(response['results']['bindings'][0]['totalDistance']['value'])
 
@@ -242,7 +251,8 @@ class MedicusService:
         elements_exist_in_database: bool = response['boolean']
 
         if elements_exist_in_database:
-            logging.info(f"Rejected adding graph to vectordatabase, since it already has elements. Rejected graph: {graph} ")
+            logging.info(
+                f"Rejected adding graph to vectordatabase, since it already has elements. Rejected graph: {graph} ")
             return
         else:
             for each_edge in graph.edges:
@@ -251,7 +261,7 @@ class MedicusService:
             for each_person in graph.people:
                 self._insert_graph_person(each_person)
 
-    def _insert_graph_edge(self, each_edge:Edge ):
+    def _insert_graph_edge(self, each_edge: Edge):
 
         replacements = each_edge.to_dict()
         query = self._load_query_template("graphdb_queries/insert_graph_edge.rq", replacements)
