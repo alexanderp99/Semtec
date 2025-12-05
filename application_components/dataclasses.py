@@ -4,23 +4,6 @@ from typing import List, Dict, Any, Optional
 from typing import Union
 
 
-class MessageType(Enum):
-    TREATMENT_REQUEST = "treatment_request"
-    SIMULATION_CONTROL = "simulation_control"
-    TREATMENT_RESPONSE = "treatment_response"
-    SIMULATION_CONTROL_RESPONSE = "simulation_control_response"
-    SIMULATION_UPDATE = "simulation_update"
-
-    def to_json(self):
-        return self.value
-
-    def __str__(self):
-        return f"MessageType.{self.name}"
-
-    def __repr__(self):
-        return f"<MessageType.{self.name}: '{self.value}'>"
-
-
 class MeasurementCategory(Enum):
     VERY_LOW = "VeryLow"
     LOW = "Low"
@@ -78,68 +61,6 @@ class Channel:
     def __repr__(self):
         return f"<Channel class>"
 
-
-@dataclass
-class TreatmentRequest:
-    patient_ssn: int
-    treatment_type: str = "standard"
-
-    def __str__(self):
-        return f"TreatmentRequest(patient_ssn={self.patient_ssn}, treatment_type='{self.treatment_type}')"
-
-    def __repr__(self):
-        return f"TreatmentRequest(patient_ssn={self.patient_ssn}, treatment_type='{self.treatment_type}')"
-
-
-@dataclass
-class SimulationControl:
-    action: str
-
-    def __str__(self):
-        return f"SimulationControl(action='{self.action}')"
-
-    def __repr__(self):
-        return f"SimulationControl(action='{self.action}')"
-
-
-@dataclass
-class TreatmentResponse:
-    patient_ssn: int
-    success: bool
-    processing_time: float
-    sim_time: float
-
-    def __str__(self):
-        return f"TreatmentResponse(patient_ssn={self.patient_ssn}, success={self.success}, processing_time={self.processing_time:.2f}s, sim_time={self.sim_time:.2f})"
-
-    def __repr__(self):
-        return f"TreatmentResponse(patient_ssn={self.patient_ssn}, success={self.success}, processing_time={self.processing_time:.2f}, sim_time={self.sim_time:.2f})"
-
-
-@dataclass
-class SimulationControlResponse:
-    action: str
-    success: bool
-    sim_time: float
-
-    def __str__(self):
-        return f"SimulationControlResponse(action='{self.action}', success={self.success}, sim_time={self.sim_time:.2f})"
-
-    def __repr__(self):
-        return f"SimulationControlResponse(action='{self.action}', success={self.success}, sim_time={self.sim_time:.2f})"
-
-
-@dataclass
-class SimulationUpdate:
-    sim_time: float
-    data: Dict[str, Any]
-
-    def __str__(self):
-        data_preview = str(self.data)[:50] + "..." if len(str(self.data)) > 50 else str(self.data)
-        return f"SimulationUpdate(sim_time={self.sim_time:.2f}, data={data_preview})"
-
-    def __repr__(self):
-        return f"SimulationUpdate(sim_time={self.sim_time:.2f}, data={self.data})"
 
 
 @dataclass
@@ -409,8 +330,7 @@ class EmergencyHelpResponse:
     help_accepted: bool
 
     def __str__(self):
-        status = "ACCEPTED" if self.help_accepted else "DECLINED"
-        return f"EmergencyHelpResponse(responder_ssn={self.first_responder_ssn}, patient_ssn={self.patient_ssn}, status={status})"
+        return f"EmergencyHelpResponse(responder_ssn={self.first_responder_ssn}, patient_ssn={self.patient_ssn}, help_accepted={self.help_accepted})"
 
     def __repr__(self):
         return f"EmergencyHelpResponse(first_responder_ssn={self.first_responder_ssn}, patient_ssn={self.patient_ssn}, help_accepted={self.help_accepted})"
@@ -443,19 +363,6 @@ class HealthResponderSelectedMessage:
     def __repr__(self):
         return f"HealthResponderSelectedMessage(patient_ssn={self.patient_ssn}, responder_ssn={self.responder_ssn}, allowed_to_decline={self.allowed_to_decline})"
 
-
-@dataclass
-class FirstResponderSelectedMessage:
-    patient_ssn: int
-    responder_ssn: int
-    declined: bool
-
-    def __str__(self):
-        status = "DECLINED" if self.declined else "SELECTED"
-        return f"FirstResponderSelectedMessage(patient_ssn={self.patient_ssn}, responder_ssn={self.responder_ssn}, status={status})"
-
-    def __repr__(self):
-        return f"FirstResponderSelectedMessage(patient_ssn={self.patient_ssn}, responder_ssn={self.responder_ssn}, declined={self.declined})"
 
 
 @dataclass
