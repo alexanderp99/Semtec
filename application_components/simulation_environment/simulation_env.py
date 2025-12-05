@@ -62,7 +62,7 @@ class Simpy:
             logger.error("Exception occurred while running simulation ")
 
     def monitor_simulation_state(self):
-        yield self.env.timeout(1/REAL_TIME_FACTOR * self.number_of_people * self.number_data_iterations)
+        yield self.env.timeout(1/REAL_TIME_FACTOR * self.number_of_people * self.number_data_iterations * 1.5)
         logging.warning(f"Stopping Simpy due to time timeout!")
         self.simulation_stopped_event.succeed()
 
@@ -91,12 +91,12 @@ class Simpy:
 
             for eachPerson in self.graph_data.people:
                 yield self.env.timeout(20)
-                self.send_person_message(eachPerson)
+                self.send_health_message(eachPerson)
 
             iteration_round += 1
 
 
-    def send_person_message(self, person:Person):
+    def send_health_message(self, person:Person):
         message:HealthMessage = HealthMessage(
                 patient_ssn=person.ssn,
                 patient_edge=person.target,

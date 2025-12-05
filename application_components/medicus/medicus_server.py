@@ -127,7 +127,6 @@ class MedicusService:
         if message.help_accepted:
             patient_ssn = message.patient_ssn
             logger.info(f"Confirmed Selection of first responder with ssn {str(message.first_responder_ssn)}")
-            self.delete_patient_health_measurements(patient_ssn)
         else:
             replacements = {
                 "ssn": str(message.patient_ssn),
@@ -155,7 +154,7 @@ class MedicusService:
             query = self._load_query_template("graphdb_queries/insert_sensor_measurement.rq", input)
             result, status_code = self._insert_query(query)
             if status_code == 200 or status_code == 204:
-                logging.info(f"Health message: {input} was successfully transformed into {replacements}")
+                logging.info(f"Health message: {input} was successfully inserted as query {query.replace("\n","")}")
             else:
                 logging.error(f"Error inserting sensor measurement of person: {status_code} - {result}. Person ssn: {data.patient_ssn}. Measurement: {each_entry}")
 
@@ -174,7 +173,7 @@ class MedicusService:
 
         if is_emergency:
             value = response['results']['bindings'][0]['value']['value'].split("#")[1]
-            measurement = response['results']['bindings'][0]['measurment']['value'].split("#")[1]
+            measurement = response['results']['bindings'][0]['measurement']['value'].split("#")[1]
             #treatment_level = response['results']['bindings'][0]['treatmentLevel']['value']
             level: str = response['results']['bindings'][0]['level']['value'].split("#")[1]
             speciality: str = response['results']['bindings'][0]['speciality']['value'].split("#")[1]
@@ -186,6 +185,8 @@ class MedicusService:
                 logging.info(f"Successfully inserted emergency: {replacements}")
             else:
                 logging.error(f"Error inserting emergency {replacements} with result: {result}")
+
+            self.delete_patient_health_measurements(data.patient_ssn)
 
             replacements = {
                 "level": level,
@@ -223,7 +224,7 @@ class MedicusService:
 
                 contestans.append({"person_id": person_id, "person_ssn": person_ssn, "distance": distance})
 
-            can_decline: bool = False
+            can_decline: bool = level == "BasicLevel"
             contestans_sorted = sorted(contestans, key=lambda x: x['distance'])
             selected_person = contestans_sorted[0]
 
@@ -259,6 +260,9 @@ class MedicusService:
             logging.info(f"Succesfully inserted graph edge: {each_edge}")
         else:
             logging.error(f"Failed to insert graph edge: {each_edge}")
+
+    def delete_all_inserts(self):
+        return
 
     def _insert_graph_person(self, each_person: Person):
         replacements = each_person.to_dict()

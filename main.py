@@ -13,7 +13,7 @@ async def main():
 
     loop = asyncio.get_event_loop()
 
-    selected_scenario = get_scenarios().get_scenario_by_name("Scenario 7")
+    selected_scenario = get_scenarios().get_scenario_by_name("Scenario 1")
 
     logging.basicConfig(level=logging.INFO,
                         handlers=[logging.FileHandler(f"scenario_{selected_scenario.name}.log", encoding='utf-8'), logging.StreamHandler()],
