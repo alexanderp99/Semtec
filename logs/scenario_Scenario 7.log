@@ -1,0 +1,183 @@
+2025-12-05 18:45:30 - __main__ - INFO - [main.py:24] - main - Running scenario Scenario 7
+2025-12-05 18:45:39 - application_components.simulation_environment.simulation_env - INFO - [simulation_env.py:90] - simulation_loop - Simpy simulation round: 0
+2025-12-05 18:45:39 - application_components.simulation_environment.simulation_env - INFO - [simulation_env.py:90] - simulation_loop - Simpy simulation round: 1
+2025-12-05 18:45:40 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e0', target='e1', distance=100)
+2025-12-05 18:45:40 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e1', target='e2', distance=150)
+2025-12-05 18:45:40 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e2', target='e3', distance=120)
+2025-12-05 18:45:40 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e3', target='e4', distance=180)
+2025-12-05 18:45:40 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e4', target='e5', distance=90)
+2025-12-05 18:45:40 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e5', target='e3', distance=200)
+2025-12-05 18:45:40 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e6', target='e5', distance=130)
+2025-12-05 18:45:40 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=0, name='Alex', type='FirstResponder', speciality=IllnessType.RESPIRATORY, location='e0', hasEmergency=False)
+2025-12-05 18:45:40 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=1, name='Matija', type='FirstResponder', speciality=IllnessType.TRAUMA, location='e2', hasEmergency=False)
+2025-12-05 18:45:40 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=2, name='Rohit', type='FirstResponder', speciality=IllnessType.TRAUMA, location='e3', hasEmergency=False)
+2025-12-05 18:45:40 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=3, name='Bob', type='FirstResponder', speciality=IllnessType.RESPIRATORY, location='e4', hasEmergency=False)
+2025-12-05 18:45:40 - root - INFO - [medicus_server.py:150] - _process_health_message - Health message: HealthMessage(patient_ssn=0, patient_edge='e0', measurements_count=1) was transformed into [HealthMeasurementValuePair(measurement_type=MeasurementType.GROUND_HARDNESS_MEASUREMENT, category=MeasurementCategory.LOW)]
+2025-12-05 18:45:41 - root - INFO - [medicus_server.py:157] - _process_health_message - Health message: {'measurement_type': 'GroundHardnessMeasurement', 'category': 'Low', 'ssn': '0'} was successfully inserted as query PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>INSERT {    ?person csa:hasHealthMeasurement [        a csa:MeasurementValuePair ;        csa:hasMeasurement csa:GroundHardnessMeasurement ;        csa:hasValue csa:Low    ] .}WHERE {    ?person csa:hasSSN "0" .}
+2025-12-05 18:45:41 - root - INFO - [medicus_server.py:169] - _process_health_message - Person 0 HAS an emergency.
+2025-12-05 18:45:41 - root - INFO - [medicus_server.py:185] - _process_health_message - Successfully inserted emergency: {'patient_ssn': '0', 'measurement': 'GroundHardnessMeasurement', 'value': 'Low', 'level': 'BasicLevel', 'speciality': 'TraumaSpeciality'}
+2025-12-05 18:45:41 - root - INFO - [medicus_server.py:80] - delete_patient_health_measurements - Successfully deleted health measurements of patient with ssn 0
+2025-12-05 18:45:41 - root - INFO - [medicus_server.py:199] - _process_health_message - Successfully found qualified responders: [{'person': {'type': 'uri', 'value': 'https://omilab.org/experiments/city-swift-aid#d10d97c9-e649-400e-9d43-2f0d724609a4'}, 'street': {'type': 'uri', 'value': 'https://omilab.org/experiments/city-swift-aid#e2'}, 'ssn': {'type': 'literal', 'value': '1'}}, {'person': {'type': 'uri', 'value': 'https://omilab.org/experiments/city-swift-aid#6fa4f548-4265-4021-bc85-b5d079ab1efb'}, 'street': {'type': 'uri', 'value': 'https://omilab.org/experiments/city-swift-aid#e3'}, 'ssn': {'type': 'literal', 'value': '2'}}]
+2025-12-05 18:45:41 - root - INFO - [medicus_server.py:219] - _process_health_message - Successfully found minimal path between (ssn {data.patient_ssn}) and (ssn {person_ssn})
+2025-12-05 18:45:41 - root - INFO - [medicus_server.py:219] - _process_health_message - Successfully found minimal path between (ssn {data.patient_ssn}) and (ssn {person_ssn})
+2025-12-05 18:45:41 - root - INFO - [medicus_server.py:86] - notify_closest_responder - First responder with ssn: 1 was chosen to help for patient ssn: 0 and can delince: True
+2025-12-05 18:45:41 - root - INFO - [medicus_server.py:146] - _process_health_message - Rejected processing health message, since an emergency already exists. Health message: HealthMessage(patient_ssn=1, patient_edge='e2', measurements_count=1)
+2025-12-05 18:45:41 - root - INFO - [medicus_server.py:146] - _process_health_message - Rejected processing health message, since an emergency already exists. Health message: HealthMessage(patient_ssn=2, patient_edge='e3', measurements_count=1)
+2025-12-05 18:45:41 - root - INFO - [medicus_server.py:146] - _process_health_message - Rejected processing health message, since an emergency already exists. Health message: HealthMessage(patient_ssn=3, patient_edge='e4', measurements_count=1)
+2025-12-05 18:45:41 - root - INFO - [medicus_server.py:146] - _process_health_message - Rejected processing health message, since an emergency already exists. Health message: HealthMessage(patient_ssn=0, patient_edge='e0', measurements_count=1)
+2025-12-05 18:45:41 - asyncio - ERROR - [base_events.py:1820] - default_exception_handler - Task exception was never retrieved
+future: <Task finished name='Task-6' coro=<MedicusService.listen_to_events() done, defined at C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py:111> exception=RuntimeError('Working outside of application context.\n\nThis typically means that you attempted to use functionality that needed\nthe current application. To solve this, set up an application context\nwith app.app_context(). See the documentation for more information.')>
+Traceback (most recent call last):
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 112, in listen_to_events
+    await asyncio.gather(
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 122, in _listen_channel
+    await handler(event.message)
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 136, in _handle_first_responder_response
+    result, status_code = self._insert_query(query)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 290, in _insert_query
+    return self._do_query_of_content_type(query, content_type=content_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 320, in _do_query_of_content_type
+    return jsonify({
+           ^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\.venv\Lib\site-packages\flask\json\__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\.venv\Lib\site-packages\werkzeug\local.py", line 318, in __get__
+    obj = instance._get_current_object()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\.venv\Lib\site-packages\werkzeug\local.py", line 519, in _get_current_object
+    raise RuntimeError(unbound_message) from None
+RuntimeError: Working outside of application context.
+
+This typically means that you attempted to use functionality that needed
+the current application. To solve this, set up an application context
+with app.app_context(). See the documentation for more information.
+2025-12-05 18:46:11 - __main__ - INFO - [main.py:24] - main - Running scenario Scenario 7
+2025-12-05 18:46:17 - application_components.simulation_environment.simulation_env - INFO - [simulation_env.py:90] - simulation_loop - Simpy simulation round: 0
+2025-12-05 18:46:17 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e0', target='e1', distance=100)
+2025-12-05 18:46:17 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e1', target='e2', distance=150)
+2025-12-05 18:46:17 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e2', target='e3', distance=120)
+2025-12-05 18:46:17 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e3', target='e4', distance=180)
+2025-12-05 18:46:17 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e4', target='e5', distance=90)
+2025-12-05 18:46:17 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e5', target='e3', distance=200)
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e6', target='e5', distance=130)
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=0, name='Alex', type='FirstResponder', speciality=IllnessType.RESPIRATORY, location='e0', hasEmergency=False)
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=1, name='Matija', type='FirstResponder', speciality=IllnessType.TRAUMA, location='e2', hasEmergency=False)
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=2, name='Rohit', type='FirstResponder', speciality=IllnessType.TRAUMA, location='e3', hasEmergency=False)
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=3, name='Bob', type='FirstResponder', speciality=IllnessType.RESPIRATORY, location='e4', hasEmergency=False)
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:150] - _process_health_message - Health message: HealthMessage(patient_ssn=0, patient_edge='e0', measurements_count=1) was transformed into [HealthMeasurementValuePair(measurement_type=MeasurementType.GROUND_HARDNESS_MEASUREMENT, category=MeasurementCategory.LOW)]
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:157] - _process_health_message - Health message: {'measurement_type': 'GroundHardnessMeasurement', 'category': 'Low', 'ssn': '0'} was successfully inserted as query PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>INSERT {    ?person csa:hasHealthMeasurement [        a csa:MeasurementValuePair ;        csa:hasMeasurement csa:GroundHardnessMeasurement ;        csa:hasValue csa:Low    ] .}WHERE {    ?person csa:hasSSN "0" .}
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:169] - _process_health_message - Person 0 HAS an emergency.
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:185] - _process_health_message - Successfully inserted emergency: {'patient_ssn': '0', 'measurement': 'GroundHardnessMeasurement', 'value': 'Low', 'level': 'BasicLevel', 'speciality': 'TraumaSpeciality'}
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:80] - delete_patient_health_measurements - Successfully deleted health measurements of patient with ssn 0
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:199] - _process_health_message - Successfully found qualified responders: [{'person': {'type': 'uri', 'value': 'https://omilab.org/experiments/city-swift-aid#b6327fd1-455a-4215-af95-9476be7d2574'}, 'street': {'type': 'uri', 'value': 'https://omilab.org/experiments/city-swift-aid#e2'}, 'ssn': {'type': 'literal', 'value': '1'}}, {'person': {'type': 'uri', 'value': 'https://omilab.org/experiments/city-swift-aid#5bf0acc6-e4fc-4d0b-82ed-474bce60cdd4'}, 'street': {'type': 'uri', 'value': 'https://omilab.org/experiments/city-swift-aid#e3'}, 'ssn': {'type': 'literal', 'value': '2'}}]
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:219] - _process_health_message - Successfully found minimal path between (ssn {data.patient_ssn}) and (ssn {person_ssn})
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:219] - _process_health_message - Successfully found minimal path between (ssn {data.patient_ssn}) and (ssn {person_ssn})
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:86] - notify_closest_responder - First responder with ssn: 1 was chosen to help for patient ssn: 0 and can delince: True
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:146] - _process_health_message - Rejected processing health message, since an emergency already exists. Health message: HealthMessage(patient_ssn=1, patient_edge='e2', measurements_count=1)
+2025-12-05 18:46:18 - root - INFO - [medicus_server.py:146] - _process_health_message - Rejected processing health message, since an emergency already exists. Health message: HealthMessage(patient_ssn=2, patient_edge='e3', measurements_count=1)
+2025-12-05 18:46:18 - asyncio - ERROR - [base_events.py:1820] - default_exception_handler - Task exception was never retrieved
+future: <Task finished name='Task-6' coro=<MedicusService.listen_to_events() done, defined at C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py:111> exception=RuntimeError('Working outside of application context.\n\nThis typically means that you attempted to use functionality that needed\nthe current application. To solve this, set up an application context\nwith app.app_context(). See the documentation for more information.')>
+Traceback (most recent call last):
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 112, in listen_to_events
+    await asyncio.gather(
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 122, in _listen_channel
+    await handler(event.message)
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 136, in _handle_first_responder_response
+    result, status_code = self._insert_query(query)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 290, in _insert_query
+    return self._do_query_of_content_type(query, content_type=content_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 320, in _do_query_of_content_type
+    return jsonify({
+           ^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\.venv\Lib\site-packages\flask\json\__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\.venv\Lib\site-packages\werkzeug\local.py", line 318, in __get__
+    obj = instance._get_current_object()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\.venv\Lib\site-packages\werkzeug\local.py", line 519, in _get_current_object
+    raise RuntimeError(unbound_message) from None
+RuntimeError: Working outside of application context.
+
+This typically means that you attempted to use functionality that needed
+the current application. To solve this, set up an application context
+with app.app_context(). See the documentation for more information.
+2025-12-05 18:46:59 - __main__ - INFO - [main.py:24] - main - Running scenario Scenario 7
+2025-12-05 18:47:00 - application_components.simulation_environment.simulation_env - INFO - [simulation_env.py:90] - simulation_loop - Simpy simulation round: 0
+2025-12-05 18:47:00 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e0', target='e1', distance=100)
+2025-12-05 18:47:00 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e1', target='e2', distance=150)
+2025-12-05 18:47:00 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e2', target='e3', distance=120)
+2025-12-05 18:47:00 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e3', target='e4', distance=180)
+2025-12-05 18:47:00 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e4', target='e5', distance=90)
+2025-12-05 18:47:00 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e5', target='e3', distance=200)
+2025-12-05 18:47:00 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e6', target='e5', distance=130)
+2025-12-05 18:47:00 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=0, name='Alex', type='FirstResponder', speciality=IllnessType.RESPIRATORY, location='e0', hasEmergency=False)
+2025-12-05 18:47:00 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=1, name='Matija', type='FirstResponder', speciality=IllnessType.TRAUMA, location='e2', hasEmergency=False)
+2025-12-05 18:47:00 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=2, name='Rohit', type='FirstResponder', speciality=IllnessType.TRAUMA, location='e3', hasEmergency=False)
+2025-12-05 18:47:01 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=3, name='Bob', type='FirstResponder', speciality=IllnessType.RESPIRATORY, location='e4', hasEmergency=False)
+2025-12-05 18:47:01 - root - INFO - [medicus_server.py:150] - _process_health_message - Health message: HealthMessage(patient_ssn=0, patient_edge='e0', measurements_count=1) was transformed into [HealthMeasurementValuePair(measurement_type=MeasurementType.GROUND_HARDNESS_MEASUREMENT, category=MeasurementCategory.LOW)]
+2025-12-05 18:47:01 - root - INFO - [medicus_server.py:157] - _process_health_message - Health message: {'measurement_type': 'GroundHardnessMeasurement', 'category': 'Low', 'ssn': '0'} was successfully inserted as query PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>INSERT {    ?person csa:hasHealthMeasurement [        a csa:MeasurementValuePair ;        csa:hasMeasurement csa:GroundHardnessMeasurement ;        csa:hasValue csa:Low    ] .}WHERE {    ?person csa:hasSSN "0" .}
+2025-12-05 18:47:01 - root - INFO - [medicus_server.py:169] - _process_health_message - Person 0 HAS an emergency.
+2025-12-05 18:47:05 - root - INFO - [medicus_server.py:185] - _process_health_message - Successfully inserted emergency: {'patient_ssn': '0', 'measurement': 'GroundHardnessMeasurement', 'value': 'Low', 'level': 'BasicLevel', 'speciality': 'TraumaSpeciality'}
+2025-12-05 18:47:05 - root - INFO - [medicus_server.py:80] - delete_patient_health_measurements - Successfully deleted health measurements of patient with ssn 0
+2025-12-05 18:47:05 - root - INFO - [medicus_server.py:199] - _process_health_message - Successfully found qualified responders: [{'person': {'type': 'uri', 'value': 'https://omilab.org/experiments/city-swift-aid#ac919fee-8dfe-4744-9129-84ae4f197cb9'}, 'street': {'type': 'uri', 'value': 'https://omilab.org/experiments/city-swift-aid#e2'}, 'ssn': {'type': 'literal', 'value': '1'}}, {'person': {'type': 'uri', 'value': 'https://omilab.org/experiments/city-swift-aid#98bc9028-320a-4d02-bb73-23ba7e9b41f1'}, 'street': {'type': 'uri', 'value': 'https://omilab.org/experiments/city-swift-aid#e3'}, 'ssn': {'type': 'literal', 'value': '2'}}]
+2025-12-05 18:47:05 - root - INFO - [medicus_server.py:219] - _process_health_message - Successfully found minimal path between (ssn {data.patient_ssn}) and (ssn {person_ssn})
+2025-12-05 18:47:05 - root - INFO - [medicus_server.py:219] - _process_health_message - Successfully found minimal path between (ssn {data.patient_ssn}) and (ssn {person_ssn})
+2025-12-05 18:47:07 - application_components.simulation_environment.simulation_env - INFO - [simulation_env.py:90] - simulation_loop - Simpy simulation round: 1
+2025-12-05 18:47:15 - application_components.simulation_environment.simulation_env - INFO - [simulation_env.py:90] - simulation_loop - Simpy simulation round: 2
+2025-12-05 18:47:17 - root - WARNING - [simulation_env.py:66] - monitor_simulation_state - Stopping Simpy due to time timeout!
+2025-12-05 18:47:18 - root - INFO - [medicus_server.py:86] - notify_closest_responder - First responder with ssn: 1 was chosen to help for patient ssn: 0 and can delince: True
+2025-12-05 18:47:18 - asyncio - ERROR - [base_events.py:1820] - default_exception_handler - Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<Simpy.listen_to_bus_messages() done, defined at C:\Users\alexp\PycharmProjects\Semtec\application_components\simulation_environment\simulation_env.py:30> exception=RuntimeError('<Event() object at 0x2408f27cce0> has already been triggered')>
+Traceback (most recent call last):
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\simulation_environment\simulation_env.py", line 34, in listen_to_bus_messages
+    self._handle_health_responder_selected(message_content)
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\simulation_environment\simulation_env.py", line 53, in _handle_health_responder_selected
+    self.stop()
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\simulation_environment\simulation_env.py", line 82, in stop
+    self.simulation_stopped_event.succeed()
+  File "C:\Users\alexp\PycharmProjects\Semtec\.venv\Lib\site-packages\simpy\events.py", line 178, in succeed
+    raise RuntimeError(f'{self} has already been triggered')
+RuntimeError: <Event() object at 0x2408f27cce0> has already been triggered
+2025-12-05 18:47:18 - root - INFO - [medicus_server.py:146] - _process_health_message - Rejected processing health message, since an emergency already exists. Health message: HealthMessage(patient_ssn=1, patient_edge='e2', measurements_count=1)
+2025-12-05 18:47:18 - root - INFO - [medicus_server.py:146] - _process_health_message - Rejected processing health message, since an emergency already exists. Health message: HealthMessage(patient_ssn=2, patient_edge='e3', measurements_count=1)
+2025-12-05 18:47:18 - root - INFO - [medicus_server.py:146] - _process_health_message - Rejected processing health message, since an emergency already exists. Health message: HealthMessage(patient_ssn=3, patient_edge='e4', measurements_count=1)
+2025-12-05 18:47:18 - root - INFO - [medicus_server.py:146] - _process_health_message - Rejected processing health message, since an emergency already exists. Health message: HealthMessage(patient_ssn=0, patient_edge='e0', measurements_count=1)
+2025-12-05 18:47:18 - root - INFO - [medicus_server.py:146] - _process_health_message - Rejected processing health message, since an emergency already exists. Health message: HealthMessage(patient_ssn=1, patient_edge='e2', measurements_count=1)
+2025-12-05 18:47:18 - root - INFO - [medicus_server.py:146] - _process_health_message - Rejected processing health message, since an emergency already exists. Health message: HealthMessage(patient_ssn=2, patient_edge='e3', measurements_count=1)
+2025-12-05 18:47:18 - root - INFO - [medicus_server.py:146] - _process_health_message - Rejected processing health message, since an emergency already exists. Health message: HealthMessage(patient_ssn=3, patient_edge='e4', measurements_count=1)
+2025-12-05 18:47:18 - root - INFO - [medicus_server.py:146] - _process_health_message - Rejected processing health message, since an emergency already exists. Health message: HealthMessage(patient_ssn=0, patient_edge='e0', measurements_count=1)
+2025-12-05 18:47:18 - asyncio - ERROR - [base_events.py:1820] - default_exception_handler - Task exception was never retrieved
+future: <Task finished name='Task-6' coro=<MedicusService.listen_to_events() done, defined at C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py:111> exception=RuntimeError('Working outside of application context.\n\nThis typically means that you attempted to use functionality that needed\nthe current application. To solve this, set up an application context\nwith app.app_context(). See the documentation for more information.')>
+Traceback (most recent call last):
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 112, in listen_to_events
+    await asyncio.gather(
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 122, in _listen_channel
+    await handler(event.message)
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 136, in _handle_first_responder_response
+    result, status_code = self._insert_query(query)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 290, in _insert_query
+    return self._do_query_of_content_type(query, content_type=content_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\application_components\medicus\medicus_server.py", line 320, in _do_query_of_content_type
+    return jsonify({
+           ^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\.venv\Lib\site-packages\flask\json\__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\.venv\Lib\site-packages\werkzeug\local.py", line 318, in __get__
+    obj = instance._get_current_object()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alexp\PycharmProjects\Semtec\.venv\Lib\site-packages\werkzeug\local.py", line 519, in _get_current_object
+    raise RuntimeError(unbound_message) from None
+RuntimeError: Working outside of application context.
+
+This typically means that you attempted to use functionality that needed
+the current application. To solve this, set up an application context
+with app.app_context(). See the documentation for more information.

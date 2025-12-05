@@ -1,0 +1,23 @@
+2025-12-05 18:48:50 - __main__ - INFO - [main.py:24] - main - Running scenario Scenario 1
+2025-12-05 18:48:52 - application_components.simulation_environment.simulation_env - INFO - [simulation_env.py:90] - simulation_loop - Simpy simulation round: 0
+2025-12-05 18:48:52 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e0', target='e1', distance=100)
+2025-12-05 18:48:52 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e1', target='e2', distance=150)
+2025-12-05 18:48:52 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e2', target='e3', distance=120)
+2025-12-05 18:48:52 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e3', target='e4', distance=180)
+2025-12-05 18:48:52 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e4', target='e5', distance=90)
+2025-12-05 18:48:52 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e5', target='e3', distance=200)
+2025-12-05 18:48:52 - root - INFO - [medicus_server.py:260] - _insert_graph_edge - Succesfully inserted graph edge: Edge(id='e6', target='e5', distance=130)
+2025-12-05 18:48:52 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=0, name='Alex', type='FirstResponder', speciality=IllnessType.RESPIRATORY, location='e0', hasEmergency=False)
+2025-12-05 18:48:53 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=1, name='Matija', type='FirstResponder', speciality=IllnessType.TRAUMA, location='e2', hasEmergency=False)
+2025-12-05 18:48:53 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=2, name='Rohit', type='FirstResponder', speciality=IllnessType.RESPIRATORY, location='e3', hasEmergency=False)
+2025-12-05 18:48:53 - root - INFO - [medicus_server.py:273] - _insert_graph_person - Succesfully inserted graph person: Person(ssn=3, name='Bob', type='FirstResponder', speciality=IllnessType.RESPIRATORY, location='e4', hasEmergency=False)
+2025-12-05 18:48:53 - root - INFO - [medicus_server.py:150] - _process_health_message - Health message: HealthMessage(patient_ssn=0, patient_edge='e0', measurements_count=1) was transformed into [HealthMeasurementValuePair(measurement_type=MeasurementType.GROUND_HARDNESS_MEASUREMENT, category=MeasurementCategory.LOW)]
+2025-12-05 18:48:53 - root - INFO - [medicus_server.py:157] - _process_health_message - Health message: {'measurement_type': 'GroundHardnessMeasurement', 'category': 'Low', 'ssn': '0'} was successfully inserted as query PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>INSERT {    ?person csa:hasHealthMeasurement [        a csa:MeasurementValuePair ;        csa:hasMeasurement csa:GroundHardnessMeasurement ;        csa:hasValue csa:Low    ] .}WHERE {    ?person csa:hasSSN "0" .}
+2025-12-05 18:48:53 - root - INFO - [medicus_server.py:169] - _process_health_message - Person 0 HAS an emergency.
+2025-12-05 18:48:53 - root - INFO - [medicus_server.py:185] - _process_health_message - Successfully inserted emergency: {'patient_ssn': '0', 'measurement': 'GroundHardnessMeasurement', 'value': 'Low', 'level': 'BasicLevel', 'speciality': 'TraumaSpeciality'}
+2025-12-05 18:48:53 - root - INFO - [medicus_server.py:80] - delete_patient_health_measurements - Successfully deleted health measurements of patient with ssn 0
+2025-12-05 18:48:53 - root - INFO - [medicus_server.py:199] - _process_health_message - Successfully found qualified responders: [{'person': {'type': 'uri', 'value': 'https://omilab.org/experiments/city-swift-aid#09578dab-de40-4f3e-9819-bc2dd9eef782'}, 'street': {'type': 'uri', 'value': 'https://omilab.org/experiments/city-swift-aid#e2'}, 'ssn': {'type': 'literal', 'value': '1'}}]
+2025-12-05 18:48:53 - root - INFO - [medicus_server.py:219] - _process_health_message - Successfully found minimal path between (ssn {data.patient_ssn}) and (ssn {person_ssn})
+2025-12-05 18:48:53 - root - INFO - [medicus_server.py:86] - notify_closest_responder - First responder with ssn: 1 was chosen to help for patient ssn: 0 and can delince: True
+2025-12-05 18:48:53 - application_components.medicus.medicus_server - INFO - [medicus_server.py:129] - _handle_first_responder_response - Confirmed Selection of first responder with ssn 1
+2025-12-05 19:01:37 - __main__ - INFO - [main.py:24] - main - Running scenario Scenario 1
