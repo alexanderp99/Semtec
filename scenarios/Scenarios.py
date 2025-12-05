@@ -61,7 +61,7 @@ def get_scenarios() -> Scenarios:
         ),
     ]
 
-    scenario = Scenario(name="Scenario 1", description="?", graph=GraphData(edges=edges,
+    scenario = Scenario(name="Scenario 1", description="Basic Trauma Dispatch | Should select ssn 1", graph=GraphData(edges=edges,
                                                                             people=people))
     scenarios.append(scenario)
 
@@ -111,7 +111,7 @@ def get_scenarios() -> Scenarios:
             measurements=[HeartRateMeasurement(value=100)]
         ),
     ]
-    scenario = Scenario(name="Scenario 2", description = "?", graph=GraphData(edges=edges,
+    scenario = Scenario(name="Scenario 2", description = "Variation Basic Certification Required | Should select ssn 1", graph=GraphData(edges=edges,
         people=people))
     scenarios.append(scenario)
 
@@ -147,7 +147,7 @@ def get_scenarios() -> Scenarios:
             speciality=IllnessType.RESPIRATORY,
             certificationLevel=CertificationLevel.ADVANCED,
             medicalHistory=None,
-            measurements=[InflammatoryMeasurement(value=20), GroundHardnessMeasurement(value=8)]
+            measurements=[InflammatoryMeasurement(value=20), GroundHardnessMeasurement(value=6)]
         ),
         Person(
             target="e4",
@@ -161,7 +161,58 @@ def get_scenarios() -> Scenarios:
             measurements=[HeartRateMeasurement(value=100)]
         ),
     ]
-    scenario = Scenario(name="Scenario 3", description="?", graph=GraphData(edges=edges,
+    scenario = Scenario(name="Scenario 3", description="Compound Fracture Trauma emergency | Should select ssn 1", graph=GraphData(edges=edges,
+                                                                            people=people))
+    scenarios.append(scenario)
+
+    people = [
+        Person(
+            target="e0",
+            ssn=0,
+            name="Alex",
+            hasEmergency=False,
+            type="FirstResponder",
+            speciality=IllnessType.RESPIRATORY,
+            certificationLevel=CertificationLevel.ADVANCED,
+            medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
+            measurements=[HeartRateMeasurement(value=100)]
+        ),
+        Person(
+            target="e2",
+            ssn=1,
+            name="Matija",
+            hasEmergency=False,
+            type="FirstResponder",
+            speciality=IllnessType.TRAUMA,
+            certificationLevel=CertificationLevel.ADVANCED,
+            medicalHistory=None,
+            measurements=[HeartRateMeasurement(value=100)]
+        ),
+        Person(
+            target="e3",
+            ssn=2,
+            name="Rohit",
+            hasEmergency=False,
+            type="FirstResponder",
+            speciality=IllnessType.RESPIRATORY,
+            certificationLevel=CertificationLevel.ADVANCED,
+            medicalHistory=None,
+            measurements=[InflammatoryMeasurement(value=21), GroundHardnessMeasurement(value=9)]
+        ),
+        Person(
+            target="e4",
+            ssn=3,
+            name="Bob",
+            hasEmergency=False,
+            type="FirstResponder",
+            speciality=IllnessType.RESPIRATORY,
+            certificationLevel=CertificationLevel.ADVANCED,
+            medicalHistory=None,
+            measurements=[HeartRateMeasurement(value=100)]
+        ),
+    ]
+
+    scenario = Scenario(name="Scenario 4", description="Toughest Compound Fracture Trauma Emergency | Should select ssn ", graph=GraphData(edges=edges,
                                                                             people=people))
     scenarios.append(scenario)
 
@@ -197,57 +248,6 @@ def get_scenarios() -> Scenarios:
             speciality=IllnessType.RESPIRATORY,
             certificationLevel=CertificationLevel.ADVANCED,
             medicalHistory=None,
-            measurements=[InflammatoryMeasurement(value=21), GroundHardnessMeasurement(value=10)]
-        ),
-        Person(
-            target="e4",
-            ssn=3,
-            name="Bob",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-    ]
-
-    scenario = Scenario(name="Scenario 4", description="?", graph=GraphData(edges=edges,
-                                                                            people=people))
-    scenarios.append(scenario)
-
-    people = [
-        Person(
-            target="e0",
-            ssn=0,
-            name="Alex",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e2",
-            ssn=1,
-            name="Matija",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.INTERMEDIATE,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e3",
-            ssn=2,
-            name="Rohit",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
             measurements=[HeartRateMeasurement(value=100)]
         ),
         Person(
@@ -263,114 +263,9 @@ def get_scenarios() -> Scenarios:
         ),
     ]
 
-    scenario = Scenario(name="Scenario 5", description="?", graph=GraphData(edges=edges,
+    scenario = Scenario(name="Scenario 5", description="No emergency", graph=GraphData(edges=edges,
                                                                             people=people))
     scenarios.append(scenario)
-
-    people = [
-        Person(
-            target="e0",
-            ssn=0,
-            name="Alex",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e2",
-            ssn=1,
-            name="Matija",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.BASIC,
-            medicalHistory=None,
-            measurements=[GroundHardnessMeasurement(value=4)]
-        ),
-        Person(
-            target="e3",
-            ssn=2,
-            name="Rohit",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            declines_request=True,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e4",
-            ssn=3,
-            name="Bob",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-    ]
-
-    scenario = Scenario(name="Scenario 6", description="?", graph=GraphData(edges=edges,
-                                                                            people=people))
-    scenarios.append(scenario)
-
-    people = [
-        Person(
-            target="e0",
-            ssn=0,
-            name="Alex",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e2",
-            ssn=1,
-            name="Matija",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.BASIC,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e3",
-            ssn=2,
-            name="Rohit",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            declines_request=True,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e4",
-            ssn=3,
-            name="Bob",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-    ]
-
-    scenario = Scenario(name="Scenario 7", description="NO EVENT", graph=GraphData(edges=edges,
-                                                                            people=people))
-    scenarios.append(scenario)
-
 
     people = [
         Person(
@@ -420,8 +315,61 @@ def get_scenarios() -> Scenarios:
         ),
     ]
 
-    scenario = Scenario(name="Scenario 9", description="?", graph=GraphData(edges=edges,
+    scenario = Scenario(name="Scenario 6", description="Cardiac Arrest | Should select ssn 3", graph=GraphData(edges=edges,
                                                                             people=people))
     scenarios.append(scenario)
+
+    people = [
+        Person(
+            target="e0",
+            ssn=0,
+            name="Alex",
+            hasEmergency=False,
+            type="FirstResponder",
+            speciality=IllnessType.RESPIRATORY,
+            certificationLevel=CertificationLevel.ADVANCED,
+            medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
+            measurements=[GroundHardnessMeasurement(value=4)]
+        ),
+        Person(
+            target="e2",
+            ssn=1,
+            name="Matija",
+            hasEmergency=False,
+            type="FirstResponder",
+            speciality=IllnessType.TRAUMA,
+            certificationLevel=CertificationLevel.BASIC,
+            declines_request=True,
+            medicalHistory=None,
+            measurements=[HeartRateMeasurement(value=100)]
+        ),
+        Person(
+            target="e3",
+            ssn=2,
+            name="Rohit",
+            hasEmergency=False,
+            type="FirstResponder",
+            speciality=IllnessType.TRAUMA,
+            certificationLevel=CertificationLevel.ADVANCED,
+            medicalHistory=None,
+            measurements=[HeartRateMeasurement(value=100)]
+        ),
+        Person(
+            target="e4",
+            ssn=3,
+            name="Bob",
+            hasEmergency=False,
+            type="FirstResponder",
+            speciality=IllnessType.RESPIRATORY,
+            certificationLevel=CertificationLevel.ADVANCED,
+            medicalHistory=None,
+            measurements=[HeartRateMeasurement(value=100)]
+        ),
+    ]
+
+    scenario = Scenario(name="Scenario 7", description="Basic Trauma Dispatch Declined | Should select ssn 1, then 2", graph=GraphData(edges=edges,
+                                                                                                people=people))
+    scenarios.append(scenario)
+
 
     return Scenarios(scenarios=scenarios)
