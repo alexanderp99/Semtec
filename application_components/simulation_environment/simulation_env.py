@@ -79,7 +79,10 @@ class Simpy:
         self.simulation_thread.start()
 
     def stop(self):
-        self.simulation_stopped_event.succeed()
+        if not self.simulation_stopped_event.triggered:
+            self.simulation_stopped_event.succeed()
+        else:
+            logger.debug("Attempted to stop simulation, but the stop event was already triggered.")
 
 
     def simulation_loop(self):
