@@ -11,6 +11,15 @@ logger = logging.getLogger(__name__)
 REAL_TIME_FACTOR = 0.1
 
 class Simpy:
+    """
+    Simulation Environment - The "Real World"
+    
+    This class uses the SimPy library to simulate the city environment, citizens, and time.
+    It acts as the source of truth for:
+    1.  Events: Emergencies occurring (sensor data generation).
+    2.  Citizens: Their location, health status, and decisions (e.g., accepting/declining help).
+    3.  Time: Managing the flow of time in the simulation.
+    """
     def __init__(self, broadcast: Broadcast, loop, graphdata: GraphData):
         self.broadcast = broadcast
         self.loop = loop
@@ -35,6 +44,12 @@ class Simpy:
 
 
     def _handle_health_responder_selected(self, message: HealthResponderSelectedMessage):
+        """
+        Responder Decision Simulation.
+        When a citizen is selected by Medicus, this method simulates their reaction.
+        -   Checks if the simulated person is configured to 'decline' requests.
+        -   Sends an EmergencyHelpResponse (Accepted/Declined) back to Medicus.
+        """
 
         person_declines:bool = self.graph_data.get_person_by_ssn(message.responder_ssn).declines_request
         if message.allowed_to_decline and person_declines:
@@ -86,6 +101,11 @@ class Simpy:
 
 
     def simulation_loop(self):
+        """
+        Main Simulation Loop.
+        Iterates through time, triggering events for each person in the city.
+        In this prototype, it triggers health sensor readings.
+        """
 
         iteration_round: int = 0
 
@@ -100,6 +120,11 @@ class Simpy:
 
 
     def send_health_message(self, person:Person):
+        """
+        Sensor Simulation.
+        Simulates a wearable device sending health metrics to the central system (Medicus).
+        Publishes a HEALTH_MEASUREMENT message to the bus.
+        """
         message:HealthMessage = HealthMessage(
                 patient_ssn=person.ssn,
                 patient_edge=person.target,

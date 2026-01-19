@@ -9,6 +9,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 class GUIServer:
+    """
+    GUI Server - Visualization Interface
+    
+    Provides a web-based interface (via FastAPI) to visualize the simulation state.
+    Serves the HTML/Cytoscape.js frontend and exposes endpoints to:
+    -   Start/Stop the simulation.
+    -   Retrieve the current graph state (graphdata) for rendering.
+    """
     def __init__(self, simpy):
         self.simpy = simpy
         self.app = FastAPI(title="GUI Server")
