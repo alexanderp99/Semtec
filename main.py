@@ -33,7 +33,7 @@ async def main():
     loop = asyncio.get_event_loop()
 
     # Load the specific test scenario (City Map, People, Emergency Types)
-    selected_scenario = get_scenarios().get_scenario_by_name("Scenario 4")
+    selected_scenario = get_scenarios().get_scenario_by_name("Scenario 1")
 
     logging.basicConfig(level=logging.INFO,
                         handlers=[logging.FileHandler(f"scenario_{selected_scenario.name}.log", encoding='utf-8'), logging.StreamHandler()],
@@ -46,7 +46,7 @@ async def main():
     # 2. Initialize Simulation Environment ("Real World")
     # Generates sensor data and handles responder acceptance/declines
     simpy = Simpy(broadcast, loop=loop)
-    simpy.load_scenario(selected_scenario.graph)
+    simpy.load_scenario(selected_scenario.graph, selected_scenario.simulation)
     
     # 3. Initialize GUI Server
     # Visualizes the city graph and simulation status

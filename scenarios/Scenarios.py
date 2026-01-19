@@ -39,7 +39,7 @@ def get_scenarios() -> Scenarios:
                speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
                measurements=[HeartRateMeasurement(value=80)]),
     ]
-    scenarios.append(Scenario(name="Scenario 1", description="Basic Trauma Dispatch | Alex triggers at tick 1", graph=GraphData(edges=edges, people=people_s1)))
+    scenarios.append(Scenario(name="Scenario 1", description="Basic Trauma Dispatch | Alex triggers at tick 1", graph=GraphData(edges=edges, people=people_s1), simulation=Simulation(number_data_iterations=3, timeout_factor=1.5)))
 
     # --- Scenario 2: Variation Basic Certification Required ---
     people_s2 = [
@@ -66,7 +66,7 @@ def get_scenarios() -> Scenarios:
                speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
                measurements=[HeartRateMeasurement(value=80)]),
     ]
-    scenarios.append(Scenario(name="Scenario 2", description="Variation Basic Certification | Alex triggers at tick 1", graph=GraphData(edges=edges, people=people_s2)))
+    scenarios.append(Scenario(name="Scenario 2", description="Variation Basic Certification | Alex triggers at tick 1", graph=GraphData(edges=edges, people=people_s2), simulation=Simulation(number_data_iterations=3, timeout_factor=1.5)))
 
     # --- Scenario 3: Compound Fracture Trauma ---
     people_s3 = [
@@ -94,7 +94,7 @@ def get_scenarios() -> Scenarios:
                speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
                measurements=[HeartRateMeasurement(value=80)]),
     ]
-    scenarios.append(Scenario(name="Scenario 3", description="Compound Fracture | Rohit triggers at tick 1", graph=GraphData(edges=edges, people=people_s3)))
+    scenarios.append(Scenario(name="Scenario 3", description="Compound Fracture | Rohit triggers at tick 1", graph=GraphData(edges=edges, people=people_s3), simulation=Simulation(number_data_iterations=3, timeout_factor=1.5)))
 
     # --- Scenario 4: Toughest Compound Fracture ---
     # Using same logic as S3 for simplicity or refine if specialized values needed. Assuming same critical values for consistency with request.
@@ -123,7 +123,7 @@ def get_scenarios() -> Scenarios:
                speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
                measurements=[HeartRateMeasurement(value=80)]),
     ]
-    scenarios.append(Scenario(name="Scenario 4", description="Toughest Compound Fracture | Rohit triggers at tick 1", graph=GraphData(edges=edges, people=people_s4)))
+    scenarios.append(Scenario(name="Scenario 4", description="Toughest Compound Fracture | Rohit triggers at tick 1", graph=GraphData(edges=edges, people=people_s4), simulation=Simulation(number_data_iterations=3, timeout_factor=1.5)))
 
     # --- Scenario 5: No Emergency ---
     people_s5 = [
@@ -141,7 +141,7 @@ def get_scenarios() -> Scenarios:
                speciality=IllnessType.CARDIAC, certificationLevel=CertificationLevel.INTERMEDIATE, medicalHistory=None,
                measurements=[HeartRateMeasurement(value=80)]),
     ]
-    scenarios.append(Scenario(name="Scenario 5", description="No Emergency | All constant normal", graph=GraphData(edges=edges, people=people_s5)))
+    scenarios.append(Scenario(name="Scenario 5", description="No Emergency | All constant normal", graph=GraphData(edges=edges, people=people_s5), simulation=Simulation(number_data_iterations=3, timeout_factor=1.5)))
 
     # --- Scenario 6: Cardiac Arrest ---
     people_s6 = [
@@ -170,7 +170,7 @@ def get_scenarios() -> Scenarios:
                measurements=[HeartRateMeasurement(value=80)]),
     ]
     # Note: Description said "Should select ssn 3" (Bob) but code had Alex (0) as patient. Keeping Alex as patient for consistency with S1.
-    scenarios.append(Scenario(name="Scenario 6", description="Cardiac Arrest | Alex triggers at tick 1", graph=GraphData(edges=edges, people=people_s6)))
+    scenarios.append(Scenario(name="Scenario 6", description="Cardiac Arrest | Alex triggers at tick 1", graph=GraphData(edges=edges, people=people_s6), simulation=Simulation(number_data_iterations=3, timeout_factor=1.5)))
 
     # --- Scenario 7: Declined Dispatch ---
     people_s7_orig = [
@@ -200,7 +200,7 @@ def get_scenarios() -> Scenarios:
                speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
                measurements=[HeartRateMeasurement(value=80)]),
     ]
-    scenarios.append(Scenario(name="Scenario 7", description="Dispatch Declined | Alex triggers, Matija declines, Rohit accepts", graph=GraphData(edges=edges, people=people_s7_full)))
+    scenarios.append(Scenario(name="Scenario 7", description="Dispatch Declined | Alex triggers, Matija declines, Rohit accepts", graph=GraphData(edges=edges, people=people_s7_full), simulation=Simulation(number_data_iterations=3, timeout_factor=1.5)))
 
 
     return Scenarios(scenarios=scenarios)

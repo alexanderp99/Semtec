@@ -29,10 +29,14 @@ class Simpy:
         self._simulation_lock = Lock()
         self.simulation_thread = None
         self.graph_data: GraphData = None
+        self.simulation_config: Simulation = None
         self.number_of_people = 0
-        self.number_data_iterations = 3
 
     async def start(self):
+        """
+        Initializes the simulation environment by connecting to the broadcast bus 
+        and starting the listener for incoming responder selection events.
+        """
         await self.broadcast.connect()
         asyncio.create_task(self.listen_to_bus_messages())
 
@@ -77,12 +81,23 @@ class Simpy:
             logger.error("Exception occurred while running simulation ")
 
     def monitor_simulation_state(self):
-        yield self.env.timeout(1/REAL_TIME_FACTOR * self.number_of_people * self.number_data_iterations * 1.5)
+        """
+        Monitors the simulation time and enforces a timeout.
+        The timeout is calculated based on the number of people, configured iterations, and a safety factor.
+        If the simulation exceeds this time, it is forcibly stopped to prevent infinite loops.
+        """
+        yield self.env.timeout(1/REAL_TIME_FACTOR * self.number_of_people * self.simulation_config.number_data_iterations * self.simulation_config.timeout_factor)
         logging.warning(f"Stopping Simpy due to time timeout!")
         self.simulation_stopped_event.succeed()
 
 
     def start_simulation(self):
+        """
+        Triggers the start of the simulation.
+        1. Publishes the initial graph state to the message bus (Channel.INIT).
+        2. Starts the timeout monitor process.
+        3. Spawns the main simulation loop in a separate thread.
+        """
         asyncio.run_coroutine_threadsafe(
             self.broadcast.publish(channel=Channel.INIT, message=self.graph_data),
             self.loop
@@ -140,8 +155,16 @@ class Simpy:
             self.loop
         )
 
-    def load_scenario(self, graph_data: GraphData):
+    def load_scenario(self, graph_data: GraphData, simulation_config: Simulation):
+        """
+        Loads a specific scenario into the simulation environment.
+        
+        Args:
+            graph_data (GraphData): The physical layout (nodes/edges) and people.
+            simulation_config (Simulation): Configuration parameters for simulation runtime/timeout.
+        """
         self.graph_data = graph_data
+        self.simulation_config = simulation_config
         self.number_of_people = len(self.graph_data.people)
         
         # Re-initialize environment

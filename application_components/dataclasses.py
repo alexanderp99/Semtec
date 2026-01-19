@@ -435,10 +435,23 @@ class GraphData:
         return f"GraphData(edges={self.edges}, people={self.people}"
 
 @dataclass
+class Simulation:
+    """
+    Configuration for the simulation runtime.
+
+    Attributes:
+        number_data_iterations (int): Controls the loop count for data generation. For each loop, data is generated for each person.Higher values mean longer simulations.
+        timeout_factor (float): Multiplier for the timeout calculation to reduce the risk of timeouts.
+    """
+    number_data_iterations: int
+    timeout_factor: float
+
+@dataclass
 class Scenario:
     name: str
     description: str
     graph: GraphData
+    simulation: Simulation
 
 @dataclass
 class Scenarios:

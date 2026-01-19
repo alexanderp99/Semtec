@@ -35,6 +35,9 @@ class GUIServer:
 
         @self.app.get("/simulation/watch")
         def watch():
+            """
+            Serves the main frontend HTML page for visualizing the simulation.
+            """
             html_file_path = Path(__file__).parent / "index.html"
             html_content = ""
             with open(html_file_path, 'r', encoding='utf-8') as f:
@@ -49,6 +52,10 @@ class GUIServer:
         ## private
         @self.app.get("/graphdata")
         def get_graphdata():
+            """
+            Returns the current state of the simulation graph (nodes, edges, people) 
+            formatted for Cytoscape.js.
+            """
             graphdata = self.simpy.graph_data
             return CytoscapeConverter.convert_to_json_object(graphdata)
 

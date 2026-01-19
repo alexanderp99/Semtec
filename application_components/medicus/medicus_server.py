@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 
 from .HealthMeasurementCategoriser import HealthMeasurementCategoriser
+from .graphdb_client import GraphDBClient
 from application_components.dataclasses import *
 import logging
 
@@ -40,39 +41,15 @@ class MedicusService:
         self.app = FastAPI(title="Medicus API")
         self.websocket_connections = []
         self.setup_routes()
-        self.GRAPHDB_BASE_URL = "http://localhost:7200"
-        self.GRAPHDB_TOKEN = self.request_graphdb_auth_token()
-        self.REPOSITORY_ID = "semtec"
+        self.setup_routes()
+        self.graphdb_client = GraphDBClient(
+            base_url="http://localhost:7200",
+            repository_id="semtec"
+        )
+        self.GRAPHDB_BASE_URL = self.graphdb_client.base_url # Keep for now if needed, or remove
+        self.REPOSITORY_ID = self.graphdb_client.repository_id # Keep for now if needed, or remove
 
-    def request_graphdb_auth_token(self):
-        url = f"{self.GRAPHDB_BASE_URL}/rest/login"
-        headers = {
-            'accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-        payload = {
-            "username": "admin",
-            "password": "root"
-        }
 
-        auth_token = ""
-
-        try:
-            response = requests.post(url, headers=headers, json=payload)
-            response.raise_for_status()
-
-            auth_token = response.headers["authorization"]
-
-            if response.status_code == 200:
-                token = response.json().get('token') or response.text
-                print(f"Successfully obtained token: {token}")
-            else:
-                print(f"Unexpected response: {response.status_code} - {response.text}")
-
-        except requests.exceptions.RequestException as e:
-            print(f"Error obtaining token: {e}")
-
-        return auth_token
 
     def setup_routes(self):
         @self.app.get("/")
@@ -80,9 +57,15 @@ class MedicusService:
             return {"service": "Medicus", "status": "running"}
 
     def _emergency_already_exists(self):
-
+        """
+        Checks the GraphDB knowledge base to see if an emergency is already currently recorded.
+        This prevents processing new health messages as emergencies if the system is already handling one.
+        
+        Returns:
+            bool: True if an emergency exists, False otherwise.
+        """
         query = self._load_query_template("graphdb_queries/query_if_emergency_exists.rq")
-        response, status_code = self._ask_query(query)
+        response, status_code = self.graphdb_client.ask_query(query)
         emergency_already_exists = response['boolean']
         return emergency_already_exists
 
@@ -91,7 +74,7 @@ class MedicusService:
             "ssn": str(patient_ssn)
         }
         query = self._load_query_template("graphdb_queries/delete_person_measurements.rq", replacement)
-        result, status_code = self._insert_query(query)
+        result, status_code = self.graphdb_client.insert_query(query)
         if status_code == 200 or status_code == 204:
             logging.info(f"Successfully deleted health measurements of patient with ssn {patient_ssn}")
         else:
@@ -99,7 +82,7 @@ class MedicusService:
 
     def reset_database(self):
         query = self._load_query_template("graphdb_queries/delete_dynamicly_generated_data.rq")
-        result, status_code = self._insert_query(query)
+        result, status_code = self.graphdb_client.insert_query(query)
         if status_code == 200 or status_code == 204:
             logging.info("Successfully deleted all dynamically generated data")
         else:
@@ -169,7 +152,7 @@ class MedicusService:
                 "emergency_id": "?"
             }
             query = self._load_query_template("graphdb_queries/insert_responder_declined.rq", replacements)
-            result, status_code = self._insert_query(query)
+            result, status_code = self.graphdb_client.insert_query(query)
             if status_code == 200 or status_code == 204:
                 logging.info(
                     f"Successfully inserted, that potential first responder with ssn {str(message.first_responder_ssn)}, declined")
@@ -229,7 +212,7 @@ class MedicusService:
         for each_entry in replacements:
             input = each_entry.to_dict() | {"ssn": str(data.patient_ssn)}
             query = self._load_query_template("graphdb_queries/insert_sensor_measurement.rq", input)
-            result, status_code = self._insert_query(query)
+            result, status_code = self.graphdb_client.insert_query(query)
             if status_code == 200 or status_code == 204:
                 query_line = query.replace('\n', "")
                 logging.info(f"Health message: {input} was successfully inserted as query {query_line}")
@@ -252,7 +235,7 @@ class MedicusService:
             "ssn": str(patient_ssn),
         }
         query = self._load_query_template("graphdb_queries/query_medical_issue_to_person.rq", replacements)
-        response, status_code = self._ask_query(query)
+        response, status_code = self.graphdb_client.ask_query(query)
         is_emergency = len(response['results']['bindings']) >= 1
 
         if status_code == 200:
@@ -283,7 +266,7 @@ class MedicusService:
             "speciality": details['speciality']
         }
         query = self._load_query_template("graphdb_queries/insert_emergency.rq", replacements)
-        result, status_code = self._insert_query(query)
+        result, status_code = self.graphdb_client.insert_query(query)
         if status_code == 200 or status_code == 204:
             logging.info(f"Successfully inserted emergency: {replacements}")
         else:
@@ -305,7 +288,7 @@ class MedicusService:
             "ssn": str(exclude_ssn)
         }
         query = self._load_query_template("graphdb_queries/query_qualified_responders.rq", replacements)
-        response, status_code = self._ask_query(query)
+        response, status_code = self.graphdb_client.ask_query(query)
         
         if status_code == 200:
             logging.info(f"Successfully found qualified responders: {response['results']['bindings']}")
@@ -327,7 +310,7 @@ class MedicusService:
             query = self._load_query_template(
                 "graphdb_queries/query_minum_distance_between_patient_and_prospect.rq",
                 replacements)
-            dist_response, dist_status_code = self._ask_query(query)
+            dist_response, dist_status_code = self.graphdb_client.ask_query(query)
             
             if dist_status_code == 200:
                 logging.info(f"Successfully found minimal path between (ssn {exclude_ssn}) and (ssn {person_ssn})")
@@ -348,7 +331,7 @@ class MedicusService:
     def _add_graph_to_vectordatabase(self, graph: GraphData):
 
         query = self._load_query_template("graphdb_queries/query_database_not_empty.rq")
-        response, status_code = self._ask_query(query)
+        response, status_code = self.graphdb_client.ask_query(query)
 
         elements_exist_in_database: bool = response['boolean']
 
@@ -367,7 +350,7 @@ class MedicusService:
 
         replacements = each_edge.to_dict()
         query = self._load_query_template("graphdb_queries/insert_graph_edge.rq", replacements)
-        result, status_code = self._insert_query(query)
+        result, status_code = self.graphdb_client.insert_query(query)
         if status_code == 200 or status_code == 204:
             logging.info(f"Succesfully inserted graph edge: {each_edge}")
         else:
@@ -380,7 +363,7 @@ class MedicusService:
         replacements = each_person.to_dict()
         replacements["id"] = str(uuid.uuid4())
         query = self._load_query_template("graphdb_queries/insert_graph_person.rq", replacements)
-        result, status_code = self._insert_query(query)
+        result, status_code = self.graphdb_client.insert_query(query)
         if status_code == 200 or status_code == 204:
             logging.info(f"Succesfully inserted graph person: {each_person}")
         else:
@@ -396,40 +379,3 @@ class MedicusService:
                 template = template.replace(f"{{{placeholder}}}", value)
 
         return template
-
-    def _insert_query(self, query):
-        content_type = "application/sparql-update"
-        return self._do_query_of_content_type(query, content_type=content_type)
-
-    def _ask_query(self, query):
-        content_type = "application/sparql-query"
-        return self._do_query_of_content_type(query, content_type=content_type)
-
-    def _do_query_of_content_type(self, query, content_type):
-        headers = {
-            "Content-Type": content_type,
-            "Authorization": self.GRAPHDB_TOKEN
-        }
-        path = ""
-        if "sparql-query" in content_type:
-            path = f"{self.GRAPHDB_BASE_URL}/repositories/{self.REPOSITORY_ID}"
-            headers["Accept"] = "application/sparql-results+json"
-        elif "sparql-update" in content_type:
-            headers["Accept"] = "*/*"
-            path = f"{self.GRAPHDB_BASE_URL}/repositories/{self.REPOSITORY_ID}/statements"
-
-        try:
-            response = requests.post(
-                path,
-                headers=headers,
-                data=query.encode('utf-8')
-            )
-
-            return_dic = {} if response.text == "" else json.loads(response.text)
-            return return_dic, response.status_code
-
-        except Exception as e:
-            return jsonify({
-                "error": "Connection to GraphDB failed",
-                "details": str(e)
-            }), 500
