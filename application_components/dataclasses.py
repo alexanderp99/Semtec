@@ -54,6 +54,7 @@ class Channel:
     INIT = "simulation_init"
     HEALTH_RESPONDER_SELECTED_MESSAGE = "health_responder_selected_message"
     HEALTH_RESPONDER_RESPONSE = "health_responder_response"
+    EMERGENCY_OVER = "emergency_over"
 
     def __str__(self):
         return f"Channel(class with constants: HEALTH_MEASUREMENT='{self.HEALTH_MEASUREMENT}', INIT='{self.INIT}')"
@@ -417,6 +418,17 @@ class HealthResponderSelectedMessage:
         return f"HealthResponderSelectedMessage(patient_ssn={self.patient_ssn}, responder_ssn={self.responder_ssn}, allowed_to_decline={self.allowed_to_decline})"
 
 
+@dataclass
+class EmergencyOverMessage:
+    patient_ssn: int
+
+    def __str__(self):
+        return f"EmergencyOverMessage(patient_ssn={self.patient_ssn})"
+
+    def __repr__(self):
+        return f"EmergencyOverMessage(patient_ssn={self.patient_ssn})"
+
+
 
 @dataclass
 class GraphData:
@@ -452,6 +464,7 @@ class Scenario:
     description: str
     graph: GraphData
     simulation: Simulation
+    goal_ssn_to_select: int
 
 @dataclass
 class Scenarios:

@@ -22,50 +22,91 @@ from application_components.simulation_environment.simulation_env import Simpy
 from broadcaster import Broadcast
 from scenarios.Scenarios import get_scenarios
 import logging
+import time
 
-#all_scenarios = [SimpleScenario.get_graph(), SimpleScenario2.get_graph()]
+AUTO_START_SIMULATION = True
+# Scenarios to run in sequence
+SCENARIOS_TO_RUN = ["Scenario 1", "Scenario 2", "Scenario 3", "Scenario 4", "Scenario 5", "Scenario 6", "Scenario 7"]
 
 async def main():
     # 1. Initialize Message Bus
-    # Uses an in-memory broadcast system for component communication
     broadcast = Broadcast("memory://")
-
     loop = asyncio.get_event_loop()
-
-    # Load the specific test scenario (City Map, People, Emergency Types)
-    selected_scenario = get_scenarios().get_scenario_by_name("Scenario 1")
-
-    logging.basicConfig(level=logging.INFO,
-                        handlers=[logging.FileHandler(f"scenario_{selected_scenario.name}.log", encoding='utf-8'), logging.StreamHandler()],
-                        format='%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(funcName)s - %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S')
-    logger = logging.getLogger(__name__)
-
-    logger.info(f"Running scenario {selected_scenario.name}")
-
-    # 2. Initialize Simulation Environment ("Real World")
-    # Generates sensor data and handles responder acceptance/declines
-    simpy = Simpy(broadcast, loop=loop)
-    simpy.load_scenario(selected_scenario.graph, selected_scenario.simulation)
+    
+    # 2. Initialize Medicus Service ("The Brain")
+    medicus_service = MedicusService(broadcast, loop=loop)
     
     # 3. Initialize GUI Server
-    # Visualizes the city graph and simulation status
+    simpy = Simpy(broadcast, loop=loop)
     gui_server = GUIServer(simpy)
     simpy.gui_server = gui_server
+
+    # Start Services
+    # We start them once. They will persist across scenarios.
+    gui_task = asyncio.create_task(gui_server.start())
+    medicus_task = asyncio.create_task(medicus_service.start())
+    simpy_task = asyncio.create_task(simpy.start())
+
+    # Give services a moment to start
+    await asyncio.sleep(2)
+
+    scenarios = get_scenarios()
+    selected_scenarios = [scenarios.get_scenario_by_name(name) for name in SCENARIOS_TO_RUN]
+
+    for selected_scenario in selected_scenarios:
+        # Re-configure logging for each scenario
+        # Note: 'force=True' is needed to re-configure the root logger in Python 3.8+
+        logging.basicConfig(level=logging.INFO,
+                            handlers=[logging.FileHandler(f"scenario_{selected_scenario.name}.log", mode='w', encoding='utf-8'), logging.StreamHandler()],
+                            format='%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(funcName)s - %(message)s',
+                            datefmt='%Y-%m-%d %H:%M:%S',
+                            force=True)
+        logger = logging.getLogger(__name__)
+
+        logger.info(f"--- Starting Scenario: {selected_scenario.name} ---")
+
+        # Reset Database
+        medicus_service.reset_database()
+
+        # Load Scenario into Simpy
+        simpy.load_scenario(selected_scenario.graph, selected_scenario.simulation)
+
+        if AUTO_START_SIMULATION:
+            logger.info("Goal of ssn to select: " + str(selected_scenario.goal_ssn_to_select))
+            simpy.start_simulation()
+            
+            # Wait for simulation to finish
+            # We check if the simulation thread is alive.
+            # When simulation calls self.stop(), the thread finishes.
+            logger.info(f"Waiting for scenario {selected_scenario.name} to complete...")
+            while simpy.simulation_thread and simpy.simulation_thread.is_alive():
+                await asyncio.sleep(1)
+            
+            logger.info(f"--- Scenario {selected_scenario.name} Completed ---")
     
-    # 4. Initialize Medicus Service ("The Brain")
-    # Consumes sensor data, performs reasoning via GraphDB, and dispatches responders
-    medicus_service = MedicusService(broadcast,loop=loop)
-    medicus_service.reset_database()
+            
+            # --- Result Verification ---
+            if selected_scenario.goal_ssn_to_select != -1:
+                log_file_name = f"scenario_{selected_scenario.name}.log"
+                expected_phrase = f"Confirmed Selection of first responder with ssn {selected_scenario.goal_ssn_to_select}"
+                
+                try:
+                    with open(log_file_name, 'r', encoding='utf-8') as f:
+                        log_content = f.read()
+                        
+                    if expected_phrase in log_content:
+                        logger.info(f"TEST PASSED: Found expected confirmation for SSN {selected_scenario.goal_ssn_to_select}")
+                    else:
+                        logger.error(f"TEST FAILED: Did not find '{expected_phrase}' in logs.")
+                except Exception as e:
+                    logger.error(f"TEST FAILED: Error reading log file for verification: {e}")
+            else:
+                logger.info("TEST SKIPPED: No goal SSN defined for this scenario.")
 
-    # Start all services concurrently
-    await asyncio.gather(
-        gui_server.start(),  # Port 8000
-        medicus_service.start(),  # Port 8001
-        simpy.start(),
-        return_exceptions=True
-    )
-
+    logger.info("All scenarios completed.")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass

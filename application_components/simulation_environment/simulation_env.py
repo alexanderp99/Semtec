@@ -32,6 +32,7 @@ class Simpy:
         self.simulation_config: Simulation = None
         self.number_of_people = 0
 
+
     async def start(self):
         """
         Initializes the simulation environment by connecting to the broadcast bus 
@@ -41,10 +42,18 @@ class Simpy:
         asyncio.create_task(self.listen_to_bus_messages())
 
     async def listen_to_bus_messages(self):
-        async with self.broadcast.subscribe(channel=Channel.HEALTH_RESPONDER_SELECTED_MESSAGE) as subscriber:
+        await asyncio.gather(
+            self._listen_channel(Channel.HEALTH_RESPONDER_SELECTED_MESSAGE, self._handle_health_responder_selected),
+            self._listen_channel(Channel.EMERGENCY_OVER, self._handle_emergency_over)
+        )
+
+    async def _listen_channel(self, channel, handler):
+        async with self.broadcast.subscribe(channel=channel) as subscriber:
             async for event in subscriber:
-                message_content = event.message
-                self._handle_health_responder_selected(message_content)
+                if asyncio.iscoroutinefunction(handler):
+                    await handler(event.message)
+                else:
+                    handler(event.message)
 
 
     def _handle_health_responder_selected(self, message: HealthResponderSelectedMessage):
@@ -69,6 +78,9 @@ class Simpy:
                                                                      help_accepted=True)),
                 self.loop
             )
+
+        
+    def _handle_emergency_over(self, message: EmergencyOverMessage):
         self.stop()
 
 
@@ -110,6 +122,7 @@ class Simpy:
 
     def stop(self):
         if not self.simulation_stopped_event.triggered:
+            logger.info(f"Stopping Simpy simulation")
             self.simulation_stopped_event.succeed()
         else:
             logger.debug("Attempted to stop simulation, but the stop event was already triggered.")

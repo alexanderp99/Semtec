@@ -146,6 +146,10 @@ class MedicusService:
         if message.help_accepted:
             patient_ssn = message.patient_ssn
             logger.info(f"Confirmed Selection of first responder with ssn {str(message.first_responder_ssn)}")
+            await self.broadcast.publish(
+                Channel.EMERGENCY_OVER,
+                EmergencyOverMessage(patient_ssn=patient_ssn)
+            )
         else:
             replacements = {
                 "ssn": str(message.patient_ssn),
