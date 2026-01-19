@@ -1,5 +1,7 @@
 Installierung
 
+python Version: 3.12
+
 python -m ensurepip --upgrade
 python -m pip install --upgrade setuptools
 python -m pip install -r requirements.txt
@@ -7,7 +9,7 @@ python -m pip install -r requirements.txt
 Vorbereitung:
 Graphdb starten
 - Repository muss "semtec" heißen
-- .pie aus "graphdb" entnehmen
+- .pie aus "graphdb" entnehmen und einfügen
 - .ttl aus "graphdb" einfügen (Medical Issue concepts)
 
 

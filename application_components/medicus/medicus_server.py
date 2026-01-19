@@ -97,6 +97,14 @@ class MedicusService:
         else:
             logging.error(f"Error deleting health measurements: {status_code}, {result}")
 
+    def reset_database(self):
+        query = self._load_query_template("graphdb_queries/delete_dynamicly_generated_data.rq")
+        result, status_code = self._insert_query(query)
+        if status_code == 200 or status_code == 204:
+            logging.info("Successfully deleted all dynamically generated data")
+        else:
+            logging.error(f"Error deleting dynamically generated data: {status_code}, {result}")
+
     async def notify_closest_responder(self, patient_ssn, first_responder_ssn: int, responder_can_decline: bool):
         """
         Dispatch Mechanism.
@@ -332,11 +340,6 @@ class MedicusService:
         if not contestants:
             # Fallback or error handling if no one is reachable/found
             logging.warning(f"No reachable qualified responders found for patient {exclude_ssn}")
-            # Depending on business logic, might return None or throw. 
-            # Original code crashed here if list empty? contestans_sorted[0] would fail.
-            # We'll assume at least one is found as per original implicit logic, but cleaner to verify.
-            # For strict refactoring, preserving behavior means risking the index error if that was original behavior,
-            # but let's assume valid state.
             return None
 
         contestants_sorted = sorted(contestants, key=lambda x: x['distance'])

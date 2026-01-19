@@ -33,7 +33,7 @@ async def main():
     loop = asyncio.get_event_loop()
 
     # Load the specific test scenario (City Map, People, Emergency Types)
-    selected_scenario = get_scenarios().get_scenario_by_name("Scenario 1")
+    selected_scenario = get_scenarios().get_scenario_by_name("Scenario 4")
 
     logging.basicConfig(level=logging.INFO,
                         handlers=[logging.FileHandler(f"scenario_{selected_scenario.name}.log", encoding='utf-8'), logging.StreamHandler()],
@@ -45,7 +45,8 @@ async def main():
 
     # 2. Initialize Simulation Environment ("Real World")
     # Generates sensor data and handles responder acceptance/declines
-    simpy = Simpy(broadcast, loop=loop, graphdata=selected_scenario.graph)
+    simpy = Simpy(broadcast, loop=loop)
+    simpy.load_scenario(selected_scenario.graph)
     
     # 3. Initialize GUI Server
     # Visualizes the city graph and simulation status
@@ -55,6 +56,7 @@ async def main():
     # 4. Initialize Medicus Service ("The Brain")
     # Consumes sensor data, performs reasoning via GraphDB, and dispatches responders
     medicus_service = MedicusService(broadcast,loop=loop)
+    medicus_service.reset_database()
 
     # Start all services concurrently
     await asyncio.gather(

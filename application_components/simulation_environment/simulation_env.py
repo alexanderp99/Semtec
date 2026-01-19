@@ -20,7 +20,7 @@ class Simpy:
     2.  Citizens: Their location, health status, and decisions (e.g., accepting/declining help).
     3.  Time: Managing the flow of time in the simulation.
     """
-    def __init__(self, broadcast: Broadcast, loop, graphdata: GraphData):
+    def __init__(self, broadcast: Broadcast, loop):
         self.broadcast = broadcast
         self.loop = loop
         self.env = simpy.rt.RealtimeEnvironment(factor=REAL_TIME_FACTOR, strict=
@@ -28,8 +28,8 @@ class Simpy:
         self.simulation_stopped_event = self.env.event()
         self._simulation_lock = Lock()
         self.simulation_thread = None
-        self.graph_data: GraphData = graphdata
-        self.number_of_people = len(self.graph_data.people)
+        self.graph_data: GraphData = None
+        self.number_of_people = 0
         self.number_data_iterations = 3
 
     async def start(self):
@@ -114,25 +114,38 @@ class Simpy:
 
             for eachPerson in self.graph_data.people:
                 yield self.env.timeout(20)
-                self.send_health_message(eachPerson)
+                self.send_health_message(eachPerson, iteration_round)
 
             iteration_round += 1
 
 
-    def send_health_message(self, person:Person):
+    def send_health_message(self, person:Person, iteration_round: int):
         """
         Sensor Simulation.
         Simulates a wearable device sending health metrics to the central system (Medicus).
         Publishes a HEALTH_MEASUREMENT message to the bus.
         """
+        measurements = person.measurements
+        if person.measurement_schedule:
+            measurements = person.measurement_schedule.get_measurements_at_tick(iteration_round)
+
         message:HealthMessage = HealthMessage(
                 patient_ssn=person.ssn,
                 patient_edge=person.target,
-                measurements=person.measurements
+                measurements=measurements
         )
 
         asyncio.run_coroutine_threadsafe(
             self.broadcast.publish(channel=Channel.HEALTH_MEASUREMENT, message=message),
             self.loop
         )
+
+    def load_scenario(self, graph_data: GraphData):
+        self.graph_data = graph_data
+        self.number_of_people = len(self.graph_data.people)
+        
+        # Re-initialize environment
+        self.env = simpy.rt.RealtimeEnvironment(factor=REAL_TIME_FACTOR, strict=False)
+        self.simulation_stopped_event = self.env.event()
+
 

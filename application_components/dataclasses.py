@@ -145,6 +145,8 @@ class HealthMeasurement:
 @dataclass
 class HeartRateMeasurement(HealthMeasurement):
     def __post_init__(self):
+        if not (0 <= self.value <= 300):
+            raise ValueError(f"{self.__class__.__name__} value must be between 0 and 300. Got: {self.value}")
         self.name = "HeartRateMeasurement"
         self.measurement_type = MeasurementType.HEART_RATE_MEASUREMENT
 
@@ -158,6 +160,8 @@ class HeartRateMeasurement(HealthMeasurement):
 @dataclass
 class InflammatoryMeasurement(HealthMeasurement):
     def __post_init__(self):
+        if not (0 <= self.value <= 50):
+            raise ValueError(f"{self.__class__.__name__} value must be between 0 and 50. Got: {self.value}")
         self.name = "InflammatoryMeasurement"
         self.measurement_type = MeasurementType.INFLAMMATORY_MEASUREMENT
 
@@ -171,6 +175,8 @@ class InflammatoryMeasurement(HealthMeasurement):
 @dataclass
 class GroundHardnessMeasurement(HealthMeasurement):
     def __post_init__(self):
+        if not (1 <= self.value <= 10):
+            raise ValueError(f"{self.__class__.__name__} value must be between 1 and 10. Got: {self.value}")
         self.name = "GroundHardnessMeasurement"
         self.measurement_type = MeasurementType.GROUND_HARDNESS_MEASUREMENT
 
@@ -184,6 +190,8 @@ class GroundHardnessMeasurement(HealthMeasurement):
 @dataclass
 class EKGReadingMeasurement(HealthMeasurement):
     def __post_init__(self):
+        if not (0 <= self.value <= 4):
+            raise ValueError(f"{self.__class__.__name__} value must be between 0 and 4. Got: {self.value}")
         self.name = "EKGReadingMeasurement"
         self.measurement_type = MeasurementType.EKG_READING_MEASUREMENT
 
@@ -197,6 +205,8 @@ class EKGReadingMeasurement(HealthMeasurement):
 @dataclass
 class MuscleTensionMeasurement(HealthMeasurement):
     def __post_init__(self):
+        if not (1 <= self.value <= 10):
+            raise ValueError(f"{self.__class__.__name__} value must be between 1 and 10. Got: {self.value}")
         self.name = "MuscleTensionMeasurement"
         self.measurement_type = MeasurementType.MUSCLE_TENSION_MEASUREMENT
 
@@ -210,6 +220,8 @@ class MuscleTensionMeasurement(HealthMeasurement):
 @dataclass
 class AirflowMeasurement(HealthMeasurement):
     def __post_init__(self):
+        if not (0 <= self.value <= 1000):
+            raise ValueError(f"{self.__class__.__name__} value must be between 0 and 1000. Got: {self.value}")
         self.name = "AirflowMeasurement"
         self.measurement_type = MeasurementType.AIRFLOW_MEASUREMENT
 
@@ -223,6 +235,8 @@ class AirflowMeasurement(HealthMeasurement):
 @dataclass
 class ChokingMeasurement(HealthMeasurement):
     def __post_init__(self):
+        if not (1 <= self.value <= 10):
+            raise ValueError(f"{self.__class__.__name__} value must be between 1 and 10. Got: {self.value}")
         self.name = "ChokingMeasurement"
         self.measurement_type = MeasurementType.CHOKING_MEASUREMENT
 
@@ -236,6 +250,8 @@ class ChokingMeasurement(HealthMeasurement):
 @dataclass
 class BreathingRateMeasurement(HealthMeasurement):
     def __post_init__(self):
+        if not (0 <= self.value <= 60):
+            raise ValueError(f"{self.__class__.__name__} value must be between 0 and 60. Got: {self.value}")
         self.name = "BreathingRateMeasurement"
         self.measurement_type = MeasurementType.BREATHING_RATE_MEASUREMENT
 
@@ -249,6 +265,8 @@ class BreathingRateMeasurement(HealthMeasurement):
 @dataclass
 class AsthmaAttackMeasurement(HealthMeasurement):
     def __post_init__(self):
+        if not (1 <= self.value <= 10):
+            raise ValueError(f"{self.__class__.__name__} value must be between 1 and 10. Got: {self.value}")
         self.name = "AsthmaAttackMeasurement"
         self.measurement_type = MeasurementType.ASTHMA_ATTACK_MEASUREMENT
 
@@ -262,6 +280,8 @@ class AsthmaAttackMeasurement(HealthMeasurement):
 @dataclass
 class HyperventilationMeasurement(HealthMeasurement):
     def __post_init__(self):
+        if not (1 <= self.value <= 10):
+            raise ValueError(f"{self.__class__.__name__} value must be between 1 and 10. Got: {self.value}")
         self.name = "HyperventilationMeasurement"
         self.measurement_type = MeasurementType.HYPERVENTILATION_MEASUREMENT
 
@@ -270,6 +290,38 @@ class HyperventilationMeasurement(HealthMeasurement):
 
     def __repr__(self):
         return f"HyperventilationMeasurement(value={self.value})"
+
+
+@dataclass
+class MeasurementScheduleItem:
+    measurements: List[HealthMeasurement]
+    duration: int  # Number of ticks
+
+    def __str__(self):
+        return f"MeasurementScheduleItem(measurements={self.measurements}, duration={self.duration})"
+    
+    def __repr__(self):
+        return f"MeasurementScheduleItem(measurements={self.measurements}, duration={self.duration})"
+
+
+@dataclass
+class MeasurementSchedule:
+    schedule_items: List[MeasurementScheduleItem]
+    default_measurements: List[HealthMeasurement]
+
+    def get_measurements_at_tick(self, tick: int) -> List[HealthMeasurement]:
+        current_tick = 0
+        for item in self.schedule_items:
+            if current_tick <= tick < current_tick + item.duration:
+                return item.measurements
+            current_tick += item.duration
+        return self.default_measurements
+
+    def __str__(self):
+        return f"MeasurementSchedule(items={len(self.schedule_items)}, default={self.default_measurements})"
+
+    def __repr__(self):
+        return f"MeasurementSchedule(items={self.schedule_items}, default={self.default_measurements})"
 
 
 @dataclass
@@ -302,6 +354,7 @@ class Person:
     medicalHistory: Optional[List[MedicalHistory]] = None
     detectsEmergency: Optional[str] = None
     measurements: Optional[List[HealthMeasurement]] = None
+    measurement_schedule: Optional[MeasurementSchedule] = None
     declines_request: bool = False
 
     def to_dict(self):

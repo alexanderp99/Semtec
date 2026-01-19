@@ -14,362 +14,193 @@ def get_scenarios() -> Scenarios:
         Edge(id="e6", target="e5", distance=130)
     ]
 
-    people = [
+    # --- Scenario 1: Basic Trauma Dispatch ---
+    people_s1 = [
         Person(
-            target="e0",
-            ssn=0,
-            name="Alex",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
+            target="e0", ssn=0, name="Alex", hasEmergency=False, type="Citizen",
+            speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED,
             medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
-            measurements=[GroundHardnessMeasurement(value=4)]
+            measurements=[GroundHardnessMeasurement(value=1)],
+            measurement_schedule=MeasurementSchedule(
+                schedule_items=[
+                    MeasurementScheduleItem(measurements=[GroundHardnessMeasurement(value=1)], duration=1),
+                    MeasurementScheduleItem(measurements=[GroundHardnessMeasurement(value=4)], duration=1),
+                ],
+                default_measurements=[GroundHardnessMeasurement(value=1)]
+            )
         ),
-        Person(
-            target="e2",
-            ssn=1,
-            name="Matija",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.BASIC,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e3",
-            ssn=2,
-            name="Rohit",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e4",
-            ssn=3,
-            name="Bob",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
+        Person(target="e2", ssn=1, name="Matija", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.TRAUMA, certificationLevel=CertificationLevel.BASIC, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
+        Person(target="e3", ssn=2, name="Rohit", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
+        Person(target="e4", ssn=3, name="Bob", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
     ]
+    scenarios.append(Scenario(name="Scenario 1", description="Basic Trauma Dispatch | Alex triggers at tick 1", graph=GraphData(edges=edges, people=people_s1)))
 
-    scenario = Scenario(name="Scenario 1", description="Basic Trauma Dispatch | Should select ssn 1", graph=GraphData(edges=edges,
-                                                                            people=people))
-    scenarios.append(scenario)
-
-    people = [
+    # --- Scenario 2: Variation Basic Certification Required ---
+    people_s2 = [
         Person(
-            target="e0",
-            ssn=0,
-            name="Alex",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
+            target="e0", ssn=0, name="Alex", hasEmergency=False, type="Citizen",
+            speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED,
             medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
-            measurements=[GroundHardnessMeasurement(value=4)]
+            measurements=[GroundHardnessMeasurement(value=1)],
+            measurement_schedule=MeasurementSchedule(
+                schedule_items=[
+                    MeasurementScheduleItem(measurements=[GroundHardnessMeasurement(value=1)], duration=1),
+                    MeasurementScheduleItem(measurements=[GroundHardnessMeasurement(value=4)], duration=1),
+                ],
+                default_measurements=[GroundHardnessMeasurement(value=1)]
+            )
         ),
-        Person(
-            target="e2",
-            ssn=1,
-            name="Matija",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.INTERMEDIATE,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e3",
-            ssn=2,
-            name="Rohit",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e4",
-            ssn=3,
-            name="Bob",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
+        Person(target="e2", ssn=1, name="Matija", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.TRAUMA, certificationLevel=CertificationLevel.INTERMEDIATE, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
+        Person(target="e3", ssn=2, name="Rohit", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
+        Person(target="e4", ssn=3, name="Bob", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
     ]
-    scenario = Scenario(name="Scenario 2", description = "Variation Basic Certification Required | Should select ssn 1", graph=GraphData(edges=edges,
-        people=people))
-    scenarios.append(scenario)
+    scenarios.append(Scenario(name="Scenario 2", description="Variation Basic Certification | Alex triggers at tick 1", graph=GraphData(edges=edges, people=people_s2)))
 
-    people = [
+    # --- Scenario 3: Compound Fracture Trauma ---
+    people_s3 = [
+        Person(target="e0", ssn=0, name="Alex", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED,
+               medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
+               measurements=[HeartRateMeasurement(value=80)]),
+        Person(target="e2", ssn=1, name="Matija", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.TRAUMA, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
         Person(
-            target="e0",
-            ssn=0,
-            name="Alex",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
+            target="e3", ssn=2, name="Rohit", hasEmergency=False, type="Citizen",
+            speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED,
+            medicalHistory=None,
+            measurements=[InflammatoryMeasurement(value=5), GroundHardnessMeasurement(value=2)],
+            measurement_schedule=MeasurementSchedule(
+                schedule_items=[
+                    MeasurementScheduleItem(measurements=[InflammatoryMeasurement(value=5), GroundHardnessMeasurement(value=2)], duration=1),
+                    MeasurementScheduleItem(measurements=[InflammatoryMeasurement(value=21), GroundHardnessMeasurement(value=9)], duration=1),
+                ],
+                default_measurements=[InflammatoryMeasurement(value=5), GroundHardnessMeasurement(value=2)]
+            )
+        ),
+        Person(target="e4", ssn=3, name="Bob", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
+    ]
+    scenarios.append(Scenario(name="Scenario 3", description="Compound Fracture | Rohit triggers at tick 1", graph=GraphData(edges=edges, people=people_s3)))
+
+    # --- Scenario 4: Toughest Compound Fracture ---
+    # Using same logic as S3 for simplicity or refine if specialized values needed. Assuming same critical values for consistency with request.
+    people_s4 = [
+        Person(target="e0", ssn=0, name="Alex", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED,
+               medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
+               measurements=[HeartRateMeasurement(value=80)]),
+        Person(target="e2", ssn=1, name="Matija", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.TRAUMA, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
+        Person(
+            target="e3", ssn=2, name="Rohit", hasEmergency=False, type="Citizen",
+            speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED,
+            medicalHistory=None,
+            measurements=[InflammatoryMeasurement(value=5), GroundHardnessMeasurement(value=2)],
+            measurement_schedule=MeasurementSchedule(
+                schedule_items=[
+                    MeasurementScheduleItem(measurements=[InflammatoryMeasurement(value=5), GroundHardnessMeasurement(value=2)], duration=1),
+                    MeasurementScheduleItem(measurements=[InflammatoryMeasurement(value=21), GroundHardnessMeasurement(value=9)], duration=1),
+                ],
+                default_measurements=[InflammatoryMeasurement(value=5), GroundHardnessMeasurement(value=2)]
+            )
+        ),
+        Person(target="e4", ssn=3, name="Bob", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
+    ]
+    scenarios.append(Scenario(name="Scenario 4", description="Toughest Compound Fracture | Rohit triggers at tick 1", graph=GraphData(edges=edges, people=people_s4)))
+
+    # --- Scenario 5: No Emergency ---
+    people_s5 = [
+        Person(target="e0", ssn=0, name="Alex", hasEmergency=False, type="Citizen",
+               speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED,
+               medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
+               measurements=[HeartRateMeasurement(value=80)]), # Just normal heart rate
+        Person(target="e2", ssn=1, name="Matija", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.TRAUMA, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
+        Person(target="e3", ssn=2, name="Rohit", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
+        Person(target="e4", ssn=3, name="Bob", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.CARDIAC, certificationLevel=CertificationLevel.INTERMEDIATE, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
+    ]
+    scenarios.append(Scenario(name="Scenario 5", description="No Emergency | All constant normal", graph=GraphData(edges=edges, people=people_s5)))
+
+    # --- Scenario 6: Cardiac Arrest ---
+    people_s6 = [
+        Person(
+            target="e0", ssn=0, name="Alex", hasEmergency=False, type="Citizen",
+            speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED,
             medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
-            measurements=[HeartRateMeasurement(value=100)]
+            measurements=[HeartRateMeasurement(value=80)], # Alex is the patient, but the emergency is cardiac, so initial measurement is normal HR
+            measurement_schedule=MeasurementSchedule(
+                schedule_items=[
+                    MeasurementScheduleItem(measurements=[HeartRateMeasurement(value=80)], duration=1),
+                    MeasurementScheduleItem(measurements=[HeartRateMeasurement(value=141), EKGReadingMeasurement(value=4), BreathingRateMeasurement(value=7)], duration=1),
+                ],
+                default_measurements=[HeartRateMeasurement(value=80)]
+            )
         ),
-        Person(
-            target="e2",
-            ssn=1,
-            name="Matija",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.INTERMEDIATE,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e3",
-            ssn=2,
-            name="Rohit",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[InflammatoryMeasurement(value=20), GroundHardnessMeasurement(value=6)]
-        ),
-        Person(
-            target="e4",
-            ssn=3,
-            name="Bob",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
+        Person(target="e2", ssn=1, name="Matija", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.TRAUMA, certificationLevel=CertificationLevel.BASIC,
+               medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
+        Person(target="e3", ssn=2, name="Rohit", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
+        Person(target="e4", ssn=3, name="Bob", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.CARDIAC, certificationLevel=CertificationLevel.INTERMEDIATE, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
     ]
-    scenario = Scenario(name="Scenario 3", description="Compound Fracture Trauma emergency | Should select ssn 1", graph=GraphData(edges=edges,
-                                                                            people=people))
-    scenarios.append(scenario)
+    # Note: Description said "Should select ssn 3" (Bob) but code had Alex (0) as patient. Keeping Alex as patient for consistency with S1.
+    scenarios.append(Scenario(name="Scenario 6", description="Cardiac Arrest | Alex triggers at tick 1", graph=GraphData(edges=edges, people=people_s6)))
 
-    people = [
+    # --- Scenario 7: Declined Dispatch ---
+    people_s7_orig = [
         Person(
-            target="e0",
-            ssn=0,
-            name="Alex",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
+            target="e0", ssn=0, name="Alex", hasEmergency=False, type="Citizen",
+            speciality=IllnessType.TRAUMA, certificationLevel=CertificationLevel.BASIC,
             medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
-            measurements=[HeartRateMeasurement(value=100)]
+            measurements=[GroundHardnessMeasurement(value=1)],
+            measurement_schedule=MeasurementSchedule(
+                schedule_items=[
+                    MeasurementScheduleItem(measurements=[GroundHardnessMeasurement(value=1)], duration=1),
+                    MeasurementScheduleItem(measurements=[GroundHardnessMeasurement(value=4)], duration=1),
+                ],
+                default_measurements=[GroundHardnessMeasurement(value=1)]
+            )
         ),
-        Person(
-            target="e2",
-            ssn=1,
-            name="Matija",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e3",
-            ssn=2,
-            name="Rohit",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[InflammatoryMeasurement(value=21), GroundHardnessMeasurement(value=9)]
-        ),
-        Person(
-            target="e4",
-            ssn=3,
-            name="Bob",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
+        Person(target="e2", ssn=1, name="Matija", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.TRAUMA, certificationLevel=CertificationLevel.BASIC, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)], declines_request=True),
     ]
-
-    scenario = Scenario(name="Scenario 4", description="Toughest Compound Fracture Trauma Emergency | Should select ssn ", graph=GraphData(edges=edges,
-                                                                            people=people))
-    scenarios.append(scenario)
-
-    people = [
-        Person(
-            target="e0",
-            ssn=0,
-            name="Alex",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e2",
-            ssn=1,
-            name="Matija",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.INTERMEDIATE,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e3",
-            ssn=2,
-            name="Rohit",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e4",
-            ssn=3,
-            name="Bob",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
+    # Add potential backup if the scenario description implies "then 2" (Rohit). Adding back other people from generic list to ensure backup exists.
+    people_s7_full = people_s7_orig + [
+        Person(target="e3", ssn=2, name="Rohit", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.TRAUMA, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
+        Person(target="e4", ssn=3, name="Bob", hasEmergency=False, type="FirstResponder",
+               speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
+               measurements=[HeartRateMeasurement(value=80)]),
     ]
-
-    scenario = Scenario(name="Scenario 5", description="No emergency", graph=GraphData(edges=edges,
-                                                                            people=people))
-    scenarios.append(scenario)
-
-    people = [
-        Person(
-            target="e0",
-            ssn=0,
-            name="Alex",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
-            measurements=[HeartRateMeasurement(value=141), EKGReadingMeasurement(value=4),
-                          BreathingRateMeasurement(value=7)],
-        ),
-        Person(
-            target="e2",
-            ssn=1,
-            name="Matija",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e3",
-            ssn=2,
-            name="Rohit",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e4",
-            ssn=3,
-            name="Bob",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.CARDIAC,
-            certificationLevel=CertificationLevel.INTERMEDIATE,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-    ]
-
-    scenario = Scenario(name="Scenario 6", description="Cardiac Arrest | Should select ssn 3", graph=GraphData(edges=edges,
-                                                                            people=people))
-    scenarios.append(scenario)
-
-    people = [
-        Person(
-            target="e0",
-            ssn=0,
-            name="Alex",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=[MedicalHistory(note="Broke left ankle", emergencyType="TraumaEmergency")],
-            measurements=[GroundHardnessMeasurement(value=4)]
-        ),
-        Person(
-            target="e2",
-            ssn=1,
-            name="Matija",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.BASIC,
-            declines_request=True,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e3",
-            ssn=2,
-            name="Rohit",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.TRAUMA,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-        Person(
-            target="e4",
-            ssn=3,
-            name="Bob",
-            hasEmergency=False,
-            type="FirstResponder",
-            speciality=IllnessType.RESPIRATORY,
-            certificationLevel=CertificationLevel.ADVANCED,
-            medicalHistory=None,
-            measurements=[HeartRateMeasurement(value=100)]
-        ),
-    ]
-
-    scenario = Scenario(name="Scenario 7", description="Basic Trauma Dispatch Declined | Should select ssn 1, then 2", graph=GraphData(edges=edges,
-                                                                                                people=people))
-    scenarios.append(scenario)
+    scenarios.append(Scenario(name="Scenario 7", description="Dispatch Declined | Alex triggers, Matija declines, Rohit accepts", graph=GraphData(edges=edges, people=people_s7_full)))
 
 
     return Scenarios(scenarios=scenarios)
