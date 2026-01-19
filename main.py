@@ -24,9 +24,9 @@ from scenarios.Scenarios import get_scenarios
 import logging
 import time
 
-AUTO_START_SIMULATION = True
+AUTO_START_SIMULATION = False
 # Scenarios to run in sequence
-SCENARIOS_TO_RUN = ["Scenario 1", "Scenario 2", "Scenario 3", "Scenario 4", "Scenario 5", "Scenario 6", "Scenario 7"]
+SCENARIOS_TO_RUN = ["Scenario 1"]
 
 async def main():
     # 1. Initialize Message Bus
@@ -102,6 +102,20 @@ async def main():
                     logger.error(f"TEST FAILED: Error reading log file for verification: {e}")
             else:
                 logger.info("TEST SKIPPED: No goal SSN defined for this scenario.")
+        else:
+            logger.info(f"--- Scenario {selected_scenario.name} Loaded. Ready for Manual Start ---")
+            logger.info("Please start the simulation via the GUI HERE: http://localhost:8000/simulation/start")
+
+            while not simpy.simulation_thread or not simpy.simulation_thread.is_alive():
+                 await asyncio.sleep(1)
+            
+            logger.info("Simulation started manually detected...")
+
+            # Wait for simulation to finish
+            while simpy.simulation_thread and simpy.simulation_thread.is_alive():
+                await asyncio.sleep(1)
+            
+            logger.info(f"--- Scenario {selected_scenario.name} Provided Manual Run Completed ---")
 
     logger.info("All scenarios completed.")
 
