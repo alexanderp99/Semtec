@@ -2,9 +2,9 @@ PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
-    INSERT DATA {
-        ? csa:declinedEmergency csa:{emergency_id}
+    INSERT {
+        ?person csa:hasDeclined "true" .
     } WHERE
     {
-        ?person csa:hasSSN "{ssn}"
+        ?person csa:hasSSN "{ssn}"^^xsd:string .
     }

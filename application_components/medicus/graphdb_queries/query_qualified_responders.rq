@@ -12,7 +12,10 @@ SELECT ?person ?street ?ssn WHERE {
     ] .
     ?level rdfs:subClassOf csa:{level} .
     FILTER NOT EXISTS {
-        ?person csa:hasSSN "{ssn}"
+        ?person csa:hasSSN "{ssn}"^^xsd:string
+    }
+    FILTER NOT EXISTS {
+        ?person csa:hasDeclined "true" .
     }
 
 }

@@ -1,0 +1,11 @@
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+
+SELECT ?level ?speciality WHERE {
+    ?emergency a csa:Emergency ;
+        csa:associatedWithSSN "{patient_ssn}"^^xsd:string ;
+        csa:requiresTreatmentLevel [
+            csa:requiresCertificationLevel ?level ;
+            csa:requiresSpecialty ?speciality
+        ] .
+}
+LIMIT 1

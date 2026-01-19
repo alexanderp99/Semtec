@@ -1,0 +1,7 @@
+PREFIX csa: <https://omilab.org/experiments/city-swift-aid#>
+
+SELECT ?location WHERE {
+    ?person csa:hasSSN "{ssn}"^^xsd:string ;
+            csa:locatedAt ?location .
+}
+LIMIT 1

@@ -1,0 +1,82 @@
+@startuml
+object Certification {
+  type = owl:Class
+}
+
+object CertificationLevel {
+  type = owl:Class
+}
+
+object BasicLevel {
+  type = CertificationLevel
+}
+
+object IntermediateLevel {
+  type = CertificationLevel
+}
+
+object AdvancedLevel {
+  type = CertificationLevel
+}
+
+object "hasCertificationLevel" as HasCertLevel {
+  type = owl:ObjectProperty
+  domain = Certification
+  range = CertificationLevel
+}
+
+object "holdsCertification" as HoldsCert {
+  type = owl:ObjectProperty
+  domain = Person
+  range = Certification
+}
+
+object MedicalIssue {
+  type = owl:Class
+}
+
+object TreatmentLevel {
+  type = owl:Class
+}
+
+object "hasTreatmentLevel" as HasTreatmentLevel {
+  type = owl:ObjectProperty
+  domain = MedicalIssue
+  range = TreatmentLevel
+}
+
+object "requiresCertificationLevel" as ReqCertLevel {
+  type = owl:ObjectProperty
+  domain = TreatmentLevel
+  range = CertificationLevel
+}
+
+object "ofSpeciality" as OfSpeciality {
+  type = ObjectProperty
+  domain = MedicalIssue
+  range = Certification
+}
+
+
+' Inheritance relationships
+CertificationLevel <|-- BasicLevel
+CertificationLevel <|-- IntermediateLevel
+CertificationLevel <|-- AdvancedLevel
+
+' Property relationships
+HasCertLevel --> Certification : domain
+HasCertLevel --> CertificationLevel : range
+
+HoldsCert --> Person : domain
+HoldsCert --> Certification : range
+
+HasTreatmentLevel --> MedicalIssue : domain
+HasTreatmentLevel --> TreatmentLevel : range
+
+ReqCertLevel --> TreatmentLevel : domain
+ReqCertLevel --> CertificationLevel : range
+
+OfSpeciality --> MedicalIssue : domain
+OfSpeciality --> Certification : range
+
+@enduml

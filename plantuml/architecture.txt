@@ -1,0 +1,15 @@
+@startuml
+left to right direction
+
+component graphdb
+component medicus
+component Bus
+component Simpy
+component UI
+
+graphdb <--> medicus
+medicus <--> Bus
+Bus <--> Simpy
+Simpy <--> UI
+
+@enduml

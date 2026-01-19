@@ -3,10 +3,11 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 INSERT {
   ?emergency_id a csa:Emergency ;
-      csa:associatedWithSSN "{patient_ssn}" ;
+      csa:associatedWithSSN "{patient_ssn}"^^xsd:string ;
       csa:requiresTreatmentLevel [
           a csa:TreatmentLevel ;
           csa:requiresCertificationLevel csa:{level} ;
+          csa:requiresSpecialty csa:{speciality} ;
           csa:hasMeasurementValuePair [
               a csa:MeasurementValuePair ;
               csa:hasMeasurement csa:{measurement} ;

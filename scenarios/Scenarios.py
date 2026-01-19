@@ -97,7 +97,6 @@ def get_scenarios() -> Scenarios:
     scenarios.append(Scenario(name="Scenario 3", description="Compound Fracture | Rohit triggers at tick 1", graph=GraphData(edges=edges, people=people_s3), simulation=Simulation(number_data_iterations=3, timeout_factor=1.5), goal_ssn_to_select=1))
 
     # --- Scenario 4: Toughest Compound Fracture ---
-    # Using same logic as S3 for simplicity or refine if specialized values needed. Assuming same critical values for consistency with request.
     people_s4 = [
         Person(target="e0", ssn=0, name="Alex", hasEmergency=False, type="FirstResponder",
                speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED,
@@ -169,11 +168,10 @@ def get_scenarios() -> Scenarios:
                speciality=IllnessType.CARDIAC, certificationLevel=CertificationLevel.INTERMEDIATE, medicalHistory=None,
                measurements=[HeartRateMeasurement(value=80)]),
     ]
-    # Note: Description said "Should select ssn 3" (Bob) but code had Alex (0) as patient. Keeping Alex as patient for consistency with S1.
     scenarios.append(Scenario(name="Scenario 6", description="Cardiac Arrest | Alex triggers at tick 1", graph=GraphData(edges=edges, people=people_s6), simulation=Simulation(number_data_iterations=3, timeout_factor=1.5), goal_ssn_to_select=3))
 
     # --- Scenario 7: Declined Dispatch ---
-    people_s7_orig = [
+    people_s7 = [
         Person(
             target="e0", ssn=0, name="Alex", hasEmergency=False, type="Citizen",
             speciality=IllnessType.TRAUMA, certificationLevel=CertificationLevel.BASIC,
@@ -190,17 +188,15 @@ def get_scenarios() -> Scenarios:
         Person(target="e2", ssn=1, name="Matija", hasEmergency=False, type="FirstResponder",
                speciality=IllnessType.TRAUMA, certificationLevel=CertificationLevel.BASIC, medicalHistory=None,
                measurements=[HeartRateMeasurement(value=80)], declines_request=True),
-    ]
-    # Add potential backup if the scenario description implies "then 2" (Rohit). Adding back other people from generic list to ensure backup exists.
-    people_s7_full = people_s7_orig + [
         Person(target="e3", ssn=2, name="Rohit", hasEmergency=False, type="FirstResponder",
                speciality=IllnessType.TRAUMA, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
                measurements=[HeartRateMeasurement(value=80)]),
         Person(target="e4", ssn=3, name="Bob", hasEmergency=False, type="FirstResponder",
                speciality=IllnessType.RESPIRATORY, certificationLevel=CertificationLevel.ADVANCED, medicalHistory=None,
-               measurements=[HeartRateMeasurement(value=80)]),
+               measurements=[HeartRateMeasurement(value=80)])
     ]
-    scenarios.append(Scenario(name="Scenario 7", description="Dispatch Declined | Alex triggers, Matija declines, Rohit accepts", graph=GraphData(edges=edges, people=people_s7_full), simulation=Simulation(number_data_iterations=3, timeout_factor=1.5), goal_ssn_to_select=2))
+    
+    scenarios.append(Scenario(name="Scenario 7", description="Dispatch Declined | Alex triggers, Matija declines, Rohit accepts", graph=GraphData(edges=edges, people=people_s7), simulation=Simulation(number_data_iterations=3, timeout_factor=1.5), goal_ssn_to_select=2))
 
 
     return Scenarios(scenarios=scenarios)

@@ -142,6 +142,33 @@ class MedicusService:
                 else:
                     handler(event.message)
 
+    def get_current_medical_issue(self, patient_ssn):
+        replacements = {"patient_ssn": str(patient_ssn)}
+        query = self._load_query_template("graphdb_queries/query_active_emergency_details.rq", replacements)
+        response, status_code = self.graphdb_client.ask_query(query)
+        if status_code == 200 and response['results']['bindings']:
+            binding = response['results']['bindings'][0]
+            try:
+                return {
+                    "level": binding['level']['value'].split("#")[1],
+                    "speciality": binding['speciality']['value'].split("#")[1]
+                }
+            except IndexError:
+                return None
+        return None
+
+    def _get_person_location(self, ssn):
+        replacements = {"ssn": str(ssn)}
+        query = self._load_query_template("graphdb_queries/query_person_location.rq", replacements)
+        response, status_code = self.graphdb_client.ask_query(query)
+        if status_code == 200 and response['results']['bindings']:
+            try:
+                location_uri = response['results']['bindings'][0]['location']['value']
+                return location_uri.split("#")[1]
+            except IndexError:
+                return None
+        return None
+
     async def _handle_first_responder_response(self, message: EmergencyHelpResponse):
         if message.help_accepted:
             patient_ssn = message.patient_ssn
@@ -152,8 +179,7 @@ class MedicusService:
             )
         else:
             replacements = {
-                "ssn": str(message.patient_ssn),
-                "emergency_id": "?"
+                "ssn": str(message.first_responder_ssn)
             }
             query = self._load_query_template("graphdb_queries/insert_responder_declined.rq", replacements)
             result, status_code = self.graphdb_client.insert_query(query)
@@ -163,7 +189,34 @@ class MedicusService:
             else:
                 logging.error(
                     f"Unsuccessfully tried inserting, that potential first responder with ssn {str(message.first_responder_ssn)}, declined ")
-            await self.notify_closest_responder()
+            
+            # Re-Dispatch Logic
+            patient_ssn = message.patient_ssn
+            emergency_details = self.get_current_medical_issue(patient_ssn)
+            patient_edge = self._get_person_location(patient_ssn)
+
+            if emergency_details and patient_edge:
+                # We skip _record_emergency_in_graphdb because the emergency is already recorded.
+                
+                responder = self._find_best_responder_in_graphdb(
+                    patient_edge=patient_edge,
+                    required_level=emergency_details['level'],
+                    speciality=emergency_details['speciality'],
+                    exclude_ssn=str(patient_ssn)
+                )
+                
+                if responder:
+                    await self.notify_closest_responder(
+                        patient_ssn=patient_ssn,
+                        first_responder_ssn=int(responder['person_ssn']),
+                        responder_can_decline=(emergency_details['level'] == "BasicLevel")
+                    )
+                else:
+                    logger.warning(f"No alternative responder found for patient {patient_ssn}")
+            else:
+                logger.error(f"Could not fetch details for re-dispatch of patient {patient_ssn}")    
+
+
 
     async def _process_health_message(self, data: HealthMessage):
         """
